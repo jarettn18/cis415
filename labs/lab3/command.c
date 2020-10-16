@@ -31,6 +31,12 @@ void lfcat() {
 			write(1, line, line_len);
 		}
 
+		write(1,"\n", 1);
+		for (int i = 0 ; i < 80 ; i++) {
+			write(1,"-", 1);
+		}
+		write(1,"\n", 1);
+
 		read_dir = readdir(opened_dir);
 	}
 
