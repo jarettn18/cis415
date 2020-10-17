@@ -1,12 +1,17 @@
 /*
- * Description: <write a brief description
+ * Description: CLI that accepts 1 command (lfcat) and writes all contents
+ * of files in the directory to a text file. 
  *
  * Author: Jarett Nishijo
  *
  * Date: 10/06/2020
  *
  * Notes:
- * 1.
+ * 1.	Valgrind raises no memory leaks. However, memory errors are raised
+ * from command.c due to unintialized buffer. I chose not to initialize the
+ * variable since we cannot predict max size of pathname without defining a
+ * max path size and buffer is realloc'd as needed by cwd(2) under the 
+ * condition that it is passed in as NULL and size = 0.
  */
 
 /*--------------------------Preprocessor Directives---------------------------*/
