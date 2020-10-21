@@ -3,6 +3,8 @@
 #include <string.h>
 #include "command.h"
 
+#define MAX_TOK_LEN 60
+
 int main(int argc, char *argv[]) {
 
 	//INTERACTIVE MODE
@@ -31,23 +33,30 @@ int main(int argc, char *argv[]) {
 	/*Allocate memory for input buffer*/
 	char *buff = malloc(sizeof(char));
 	char *tokens = malloc(sizeof(buff) + 1);
+	char *token = malloc(sizeof(char) * MAX_TOK_LEN);
 	char *saveptr = tokens;
+	char *saveptr_tok = token;
+
+	int num_args;
+	char **args = (char **)malloc(sizeof(char *) * MAX_TOK_LEN);
+	for (int i = 0 ; i < MAX_TOK_LEN ; i++) {
+		args[i] = (char *)malloc(sizeof(char) * MAX_TOK_LEN);
+	}
 
 	size_t n = 1;
 
 	char *exit = "exit";
 	char *delimiters = " ";
-	int tok_len;
 	
 	while (1) {
 		/* Print >>> then get the input string */
 		do {
 			printf(">>> ");
-			tok_len = getline(&buff, &n, stdin);
+			getline(&buff, &n, stdin);
 		} while (strcmp(buff, "\n") == 0);
 
 		/* Tokenize the input string */
-		char *token = strtok_r(buff, delimiters, &tokens);
+		token = strtok_r(buff, delimiters, &tokens);
 		
 		/* If the user entered <exit> then exit */
 		if (strncmp(exit, token, 4) == 0 || token == NULL) {
@@ -65,13 +74,6 @@ int main(int argc, char *argv[]) {
 		*	cp : 2
 		*	mv : 2
 		*/
-		int num_args;
-		char **args = malloc(sizeof(char *) * tok_len);
-		for (int i = 0 ; i < tok_len ; i++) {
-			args[i] = (char *)malloc(sizeof(char) * tok_len);
-		}
-		//TODO FREE MEMORY WITHOUT LEAKS
-		int x = 1;
 		//Run token through a strcmp for each command
 		do {
 			//Fill Array of strings with arguments until semicolon or NULL is reached
@@ -82,10 +84,6 @@ int main(int argc, char *argv[]) {
 				token = strtok_r(NULL, delimiters, &tokens);
 				num_args++;
 			}
-			for (int j = 0 ;  j < num_args ; j++) {
-				printf("%s IN ARG ARRAY\n",args[j]);
-			}
-			printf("\n");
 			if (args[0] == NULL) {
 				args[0] = " ";
 			}
@@ -118,7 +116,11 @@ int main(int argc, char *argv[]) {
 			}
 		} while (token = strtok_r(NULL, delimiters, &tokens));
 	}
+	for (int i = 0 ; i < MAX_TOK_LEN ; i++) {
+		free(args[i]);
+	}
+	free(args);
 	free(buff);
 	free(saveptr);
-
+	free(saveptr_tok);
 }
