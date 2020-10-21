@@ -37,12 +37,13 @@ int main(int argc, char *argv[]) {
 
 	char *exit = "exit";
 	char *delimiters = " ";
+	int tok_len;
 	
 	while (1) {
 		/* Print >>> then get the input string */
 		do {
 			printf(">>> ");
-			int tok_len = getline(&buff, &n, stdin);
+			tok_len = getline(&buff, &n, stdin);
 		} while (strcmp(buff, "\n") == 0);
 
 		/* Tokenize the input string */
@@ -64,11 +65,17 @@ int main(int argc, char *argv[]) {
 		*	cp : 2
 		*	mv : 2
 		*/
+		int num_args;
+		char **args = malloc(sizeof(char *) * tok_len);
+		for (int i = 0 ; i < tok_len ; i++) {
+			args[i] = (char *)malloc(sizeof(char) * tok_len);
+		}
+		//TODO FREE MEMORY WITHOUT LEAKS
 		int x = 1;
 		//Run token through a strcmp for each command
 		do {
-			int num_args = 0;
-			char **args;
+			//Fill Array of strings with arguments until semicolon or NULL is reached
+			num_args = 0;
 			while (token && !(strncmp(token, ";", strlen(token)) == 0 && strlen(token) == strlen(";"))) {
 				token = strtok(token, "\n");
 				args[num_args] = token;
@@ -111,6 +118,7 @@ int main(int argc, char *argv[]) {
 			}
 		} while (token = strtok_r(NULL, delimiters, &tokens));
 	}
-
+	free(buff);
+	free(saveptr);
 
 }
