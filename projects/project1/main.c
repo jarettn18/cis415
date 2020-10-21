@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
 		/* Print >>> then get the input string */
 		do {
 			printf(">>> ");
-			getline(&buff, &n, stdin);
+			int tok_len = getline(&buff, &n, stdin);
 		} while (strcmp(buff, "\n") == 0);
 
 		/* Tokenize the input string */
@@ -64,35 +64,46 @@ int main(int argc, char *argv[]) {
 		*	cp : 2
 		*	mv : 2
 		*/
-
+		int x = 1;
 		//Run token through a strcmp for each command
 		do {
-			token = strtok(token, "\n");
-			if (strlen(token) == 1 || token == NULL) {
-				//Not a valid command or end of input. do nothing
+			int num_args = 0;
+			char **args;
+			while (token && !(strncmp(token, ";", strlen(token)) == 0 && strlen(token) == strlen(";"))) {
+				token = strtok(token, "\n");
+				args[num_args] = token;
+				token = strtok_r(NULL, delimiters, &tokens);
+				num_args++;
 			}
-			else if (strncmp(token, "ls", strlen(token)) == 0 && strlen(token) == strlen("ls")) {
+			for (int j = 0 ;  j < num_args ; j++) {
+				printf("%s IN ARG ARRAY\n",args[j]);
+			}
+			printf("\n");
+			if (args[0] == NULL) {
+				args[0] = " ";
+			}
+			if (strncmp(args[0], "ls", strlen(args[0])) == 0 && strlen(args[0]) == strlen("ls")) {
 				printf("ls called\n");
 			}
-			else if (strncmp(token, "pwd", strlen(token)) == 0 && strlen(token) == strlen("pwd")) {
+			else if (strncmp(args[0], "pwd", strlen(args[0])) == 0 && strlen(args[0]) == strlen("pwd")) {
 				printf("pwd called\n");
 			}
-			else if (strncmp(token, "mkdir", strlen(token)) == 0 && strlen(token) == strlen("mkdir")) {
+			else if (strncmp(args[0], "mkdir", strlen(args[0])) == 0 && strlen(args[0]) == strlen("mkdir")) {
 				printf("mkdir called\n");
 			}
-			else if (strncmp(token, "cd", strlen(token)) == 0 && strlen(token) == strlen("cd")) {
+			else if (strncmp(args[0], "cd", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cd")) {
 				printf("cd called\n");
 			}
-			else if (strncmp(token, "rm", strlen(token)) == 0 && strlen(token) == strlen("rm")) {
+			else if (strncmp(args[0], "rm", strlen(args[0])) == 0 && strlen(args[0]) == strlen("rm")) {
 				printf("rm called\n");
 			}
-			else if (strncmp(token, "cat", strlen(token)) == 0 && strlen(token) == strlen("cat")) {
+			else if (strncmp(args[0], "cat", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cat")) {
 				printf("cat called\n");
 			}
-			else if (strncmp(token, "cp", strlen(token)) == 0 && strlen(token) == strlen("cp")) {
+			else if (strncmp(args[0], "cp", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cp")) {
 				printf("cp called\n");
 			}
-			else if (strncmp(token, "mv", strlen(token)) == 0 && strlen(token) == strlen("mv")) {
+			else if (strncmp(args[0], "mv", strlen(args[0])) == 0 && strlen(args[0]) == strlen("mv")) {
 				printf("mv called\n");
 			}
 			else {
