@@ -3,7 +3,7 @@
 #include <string.h>
 #include "command.h"
 
-#define MAX_TOK_LEN 60
+#define MAX_TOK_LEN 100 
 
 int main(int argc, char *argv[]) {
 
@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
 		}
 		else {
 			printf("FILE MODE ACTIVATED\n");
+			freopen("input.txt", "r+", stdin);
 			freopen("output.txt", "w+", stdout);
-			freopen("output.txt", "w+", stderr);
 		}
 	}
 	else {

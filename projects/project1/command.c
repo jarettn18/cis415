@@ -68,8 +68,7 @@ void makeDir(char *dirName) {
 
 	dir_path = strcat(cwd, "/");
 	dir_path = strcat(cwd, dirName);
-	made_dir = mkdir(dir_path, 0);
-	printf("dir_path: %s\n", dir_path);
+	made_dir = mkdir(dir_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	if (made_dir != 0) {
 		write(2, "ERROR: DIRECTORY NOT MADE\n", 26);
 	}
