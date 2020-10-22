@@ -20,7 +20,6 @@ int main(int argc, char *argv[]) {
 			exit(EXIT_FAILURE);
 		}
 		else {
-			printf("Made it here chief\n");
 			freopen("output.txt", "w+", stdout);
 		}
 	}
@@ -160,9 +159,31 @@ int main(int argc, char *argv[]) {
 			}
 			else if (strncmp(args[0], "cp", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cp")) {
 				printf("cp called\n");
+				if (num_args > 3) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else if (num_args < 3) {
+					fprintf(stderr, "ERROR: TOO FEW ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					copyFile(args[1], args[2]);
+				}
 			}
 			else if (strncmp(args[0], "mv", strlen(args[0])) == 0 && strlen(args[0]) == strlen("mv")) {
 				printf("mv called\n");
+				if (num_args > 3) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else if (num_args < 3) {
+					fprintf(stderr, "ERROR: TOO FEW ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					moveFile(args[1], args[2]);
+				}
 			}
 			else {
 				printf("ERROR: Unrecognized Command!\n");
