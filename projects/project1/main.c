@@ -20,7 +20,9 @@ int main(int argc, char *argv[]) {
 			exit(EXIT_FAILURE);
 		}
 		else {
+			printf("FILE MODE ACTIVATED\n");
 			freopen("output.txt", "w+", stdout);
+			freopen("output.txt", "w+", stderr);
 		}
 	}
 	else {
@@ -34,14 +36,12 @@ int main(int argc, char *argv[]) {
 	char *tokens = malloc(sizeof(buff) + 1);
 	char *token = malloc(sizeof(char) * MAX_TOK_LEN);
 	char *saveptr = tokens;
-	char *saveptr_tok = token;
 
 	int num_args;
 	char **args = (char **)malloc(sizeof(char *) * MAX_TOK_LEN);
 	for (int i = 0 ; i < MAX_TOK_LEN ; i++) {
 		args[i] = (char *)malloc(sizeof(char) * MAX_TOK_LEN);
 	}
-
 	size_t n = 1;
 
 	char *exit = "exit";
@@ -63,16 +63,6 @@ int main(int argc, char *argv[]) {
 		}
 
 		/* If the user entered a command */
-		/*
-		*	ls : 0
-		*	pwd : 0
-		*	mkdir : 1
-		*	cd : 1
-		*	rm : 1
-		*	cat : 1
-		*	cp : 2
-		*	mv : 2
-		*/
 		//Run token through a strcmp for each command
 		do {
 			//Fill Array of strings with arguments until semicolon or NULL is reached
@@ -131,7 +121,6 @@ int main(int argc, char *argv[]) {
 				}
 			}
 			else if (strncmp(args[0], "rm", strlen(args[0])) == 0 && strlen(args[0]) == strlen("rm")) {
-				printf("rm called\n");
 				if (num_args > 2) {
 					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
 					return -1;
@@ -158,7 +147,6 @@ int main(int argc, char *argv[]) {
 				}
 			}
 			else if (strncmp(args[0], "cp", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cp")) {
-				printf("cp called\n");
 				if (num_args > 3) {
 					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
 					return -1;
@@ -195,6 +183,6 @@ int main(int argc, char *argv[]) {
 	}
 	free(args);
 	free(buff);
+	free(token);
 	free(saveptr);
-	free(saveptr_tok);
 }

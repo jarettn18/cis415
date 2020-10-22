@@ -48,13 +48,28 @@ void showCurrentDir() {
 }
 
 void makeDir(char *dirName) {
+	char *dir_name_abs = strrchr(dirName, '/');
+	if (dir_name_abs != NULL) {
+		int made_dir_abs = mkdir(dirName, S_IRWXU | S_IRWXG | S_IROTH);
+		if (made_dir_abs == 0) {
+			return;
+		}
+		else {
+			write(2, "ERROR: PATH NOT FOUND\n", 23);
+			return;
+		}
+	}
+
 	char *buf = NULL;
 	size_t size = 0;
-
+	char *dir_path;
 	char *cwd = getcwd(buf, size);
-	char *dir_path = strcat(cwd, "/");
+	int made_dir;
+
+	dir_path = strcat(cwd, "/");
 	dir_path = strcat(cwd, dirName);
-	int made_dir = mkdir(dir_path, 0);
+	made_dir = mkdir(dir_path, 0);
+	printf("dir_path: %s\n", dir_path);
 	if (made_dir != 0) {
 		write(2, "ERROR: DIRECTORY NOT MADE\n", 26);
 	}
@@ -87,10 +102,17 @@ void displayFile(char *filename) {
 	char *buf = NULL;
 	char *file_buf = malloc(sizeof(char) * 1000);
 	size_t size = 0;
-
+	char *dir_path;
 	char *cwd = getcwd(buf,size);
-	char *dir_path = strcat(cwd,"/");
-	dir_path = strcat(cwd,filename);
+
+	char *dir_name_abs = strrchr(filename, '/');
+	if (dir_name_abs != NULL) {
+		dir_path = filename;
+	}
+	else {
+		dir_path = strcat(cwd,"/");
+		dir_path = strcat(cwd,filename);
+	}
 
 	int opened_file = open(dir_path, O_RDONLY);
 
@@ -112,15 +134,22 @@ void displayFile(char *filename) {
 }
 
 void deleteFile(char *filename) {
-	printf("deleting\n");
 	char *buf = NULL;
 	size_t size = 0;
-
+	char *dir_path;
 	char *cwd = getcwd(buf,size);
-	char *dir_path = strcat(cwd,"/");
-	dir_path = strcat(cwd, filename);
+
+	char *dir_name_abs = strrchr(filename, '/');
+	if (dir_name_abs != NULL) {
+		dir_path = filename;
+	}
+	else {
+		dir_path = strcat(cwd,"/");
+		dir_path = strcat(cwd,filename);
+	}
 
 	int removed_file = remove(dir_path);
+
 	if (removed_file != 0) {
 		write(2, "ERROR: FILE NOT DELETED\n", 24);
 	}
@@ -136,27 +165,33 @@ void moveFile(char *sourcePath, char *destinationPath) {
 	char *cwd_s = getcwd(buf,size);
 	char *cwd_d = getcwd(buf,size);
 
-	char *source_p = strcat(cwd_s, "/");
-	char *dest_p = strcat(cwd_d, "/");
-	
-	source_p = strcat(cwd_s, sourcePath);
-	dest_p = strcat(cwd_d, destinationPath);
+	//ABS PATH CHECK SOURCE
+	char *source_p;
 
-	int renamed_abs_abs = rename(sourcePath, destinationPath);
-	int renamed_rel_abs = rename(source_p, destinationPath);
-	int renamed_abs_rel = rename(sourcePath, dest_p);
+	char *dir_name_abs_S = strrchr(sourcePath, '/');
+	if (dir_name_abs_S != NULL) {
+		source_p = sourcePath;
+	}
+	else {
+		source_p = strcat(cwd_s,"/");
+		source_p = strcat(cwd_s,sourcePath);
+	}
+
+	//ABS PATH CHECK DEST
+	char *dest_p;
+
+	char *dir_name_abs_D = strrchr(destinationPath, '/');
+	if (dir_name_abs_D != NULL) {
+		dest_p = destinationPath;
+	}
+	else {
+		dest_p = strcat(cwd_d,"/");
+		dest_p = strcat(cwd_d,destinationPath);
+	}
+
 	int renamed = rename(source_p, dest_p);
 
 	if (renamed == 0) {
-		return;
-	}
-	else if (renamed_abs_abs == 0) {
-		return;
-	}
-	else if (renamed_rel_abs == 0) {
-		return;
-	}
-	else if (renamed_abs_rel == 0) {
 		return;
 	}
 	else {
@@ -176,12 +211,31 @@ void copyFile(char *sourcePath, char *destinationPath) {
 	char *cwd_s = getcwd(buf,size);
 	char *cwd_d = getcwd(buf,size);
 
-	char *source_p = strcat(cwd_s,"/");
-	source_p = strcat(cwd_s,sourcePath);
+	//ABS PATH CHECK SOURCE
+	char *source_p;
 
-	char *dest_p = strcat(cwd_d,"/");
-	dest_p = strcat(cwd_d,destinationPath);
+	char *dir_name_abs_S = strrchr(sourcePath, '/');
+	if (dir_name_abs_S != NULL) {
+		source_p = sourcePath;
+	}
+	else {
+		source_p = strcat(cwd_s,"/");
+		source_p = strcat(cwd_s,sourcePath);
+	}
 
+	//ABS PATH CHECK DEST
+	char *dest_p;
+
+	char *dir_name_abs_D = strrchr(destinationPath, '/');
+	if (dir_name_abs_D != NULL) {
+		dest_p = destinationPath;
+	}
+	else {
+		dest_p = strcat(cwd_d,"/");
+		dest_p = strcat(cwd_d,destinationPath);
+	}
+
+	//COPY
 	int opened_file = open(source_p, O_RDONLY);
 	int copied_file = open(dest_p, O_RDWR | O_CREAT);
 
@@ -196,6 +250,7 @@ void copyFile(char *sourcePath, char *destinationPath) {
 			bytes_read = read(opened_file, file_buf, 1000);
 		}
 	}
+	//chmod(dest_p, S_IRUSR | S_IRGRP | S_IROTH);
 	close(opened_file);
 	close(copied_file);
 	free(buf);
