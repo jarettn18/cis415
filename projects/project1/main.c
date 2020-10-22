@@ -88,22 +88,75 @@ int main(int argc, char *argv[]) {
 				args[0] = " ";
 			}
 			if (strncmp(args[0], "ls", strlen(args[0])) == 0 && strlen(args[0]) == strlen("ls")) {
-				printf("ls called\n");
+				if (num_args > 1) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					listDir();
+				}
 			}
 			else if (strncmp(args[0], "pwd", strlen(args[0])) == 0 && strlen(args[0]) == strlen("pwd")) {
-				printf("pwd called\n");
+				if (num_args > 1) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					showCurrentDir();
+				}
 			}
 			else if (strncmp(args[0], "mkdir", strlen(args[0])) == 0 && strlen(args[0]) == strlen("mkdir")) {
-				printf("mkdir called\n");
+				if (num_args > 2) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else if (num_args < 2) {
+					fprintf(stderr, "ERROR: TOO FEW ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					makeDir(args[1]);
+				}
 			}
 			else if (strncmp(args[0], "cd", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cd")) {
-				printf("cd called\n");
+				if (num_args > 2) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else if (num_args < 2) {
+					fprintf(stderr, "ERROR: TOO FEW ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					changeDir(args[1]);
+				}
 			}
 			else if (strncmp(args[0], "rm", strlen(args[0])) == 0 && strlen(args[0]) == strlen("rm")) {
 				printf("rm called\n");
+				if (num_args > 2) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else if (num_args < 2) {
+					fprintf(stderr, "ERROR: TOO FEW ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					deleteFile(args[1]);
+				}
 			}
 			else if (strncmp(args[0], "cat", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cat")) {
-				printf("cat called\n");
+				if (num_args > 2) {
+					fprintf(stderr, "ERROR: TOO MANY ARGUMENTS\n");
+					return -1;
+				}
+				else if (num_args < 2) {
+					fprintf(stderr, "ERROR: TOO FEW ARGUMENTS\n");
+					return -1;
+				}
+				else {
+					displayFile(args[1]);
+				}
 			}
 			else if (strncmp(args[0], "cp", strlen(args[0])) == 0 && strlen(args[0]) == strlen("cp")) {
 				printf("cp called\n");
