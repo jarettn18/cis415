@@ -32,10 +32,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	/*Allocate memory for input buffer*/
-	char *buff = malloc(sizeof(char));
-	char *tokens = malloc(sizeof(buff) + 1);
-	char *token = malloc(sizeof(char) * MAX_TOK_LEN);
+	char *buff = NULL; //malloc(sizeof(char) * MAX_TOK_LEN);
+	char *tokens = NULL; //malloc(sizeof(buff) + 1);
+	char *token = NULL; // malloc(sizeof(char) * MAX_TOK_LEN);
 	char *saveptr = tokens;
+	char *saveptr_buff = buff;
+	char *saveptr_tok = token;
 
 	int num_args;
 	char **args = (char **)malloc(sizeof(char *) * MAX_TOK_LEN);
@@ -182,7 +184,8 @@ int main(int argc, char *argv[]) {
 		free(args[i]);
 	}
 	free(args);
-	free(buff);
-	free(token);
 	free(saveptr);
+	free(saveptr_buff);
+	free(saveptr_tok);
+	return 0;
 }
