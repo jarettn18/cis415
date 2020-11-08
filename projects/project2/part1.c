@@ -44,12 +44,14 @@ int main(int argc, char *argv[]) {
 
 	int condition = 1;
 
-//	char *cmd = malloc(sizeof(char) * MAX_LINE_LEN);
-//	char **args = malloc(sizeof(char *) * MAX_LINE_LEN);
-//	for (int i = 0 ; i < MAX_LINE_LEN ; i++) {
-//		args[i] = malloc(sizeof(char) * MAX_LINE_LEN);
-//	}
-
+	char *cmd = malloc(sizeof(char) * MAX_LINE_LEN);
+	char *cmd_sp = cmd;
+	
+	char **args = malloc(sizeof(char *) * MAX_LINE_LEN);
+	for (int i = 0 ; i < MAX_LINE_LEN ; i++) {
+		args[i] = malloc(sizeof(char) * MAX_LINE_LEN);
+	}
+	
 	while (condition != -1) {
 		condition = getline(&buff, &n, stdin);
 		if (condition == -1) {
@@ -63,8 +65,9 @@ int main(int argc, char *argv[]) {
 		if (pid_array[pid_i] == 0) {
 			int args_i = 0;
 			char *token;
-			/*
-			cmd = strtok_r(buff, delim, &buff);
+			//TODO MEMORY LEAKS CAUSED BY THIS CHUNK OF CODE
+			//cmd = strtok_r(buff, delim, &buff);
+			/*	
 			while (token = strtok_r(NULL, delim, &buff)) {
 				args[args_i] = token;
 				args_i++;
@@ -76,13 +79,13 @@ int main(int argc, char *argv[]) {
 			*/
 		}
 	}
-	/*
+	
 	for (int i  = 0 ; i < MAX_LINE_LEN ; i++) {
 		free(args[i]);
 	}
 	free(args);
-	*/
-	//free(cmd);
+	
+	free(cmd);
 	fclose(stdin);
 	free(buff);
 }
