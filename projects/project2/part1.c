@@ -36,8 +36,9 @@ int main(int argc, char *argv[]) {
 
 	size_t n = (size_t) MAX_LINE_LEN;
 	char *buff = malloc(sizeof(char) * MAX_LINE_LEN);
+	char *buff2 = malloc(sizeof(char) * MAX_LINE_LEN);
 	char *saveptr = buff;
-	char *delim = " ";
+	char *saveptr2 = buff2;
 
 	pid_t pid_array[25];
 	int pid_i = 0;
@@ -48,16 +49,22 @@ int main(int argc, char *argv[]) {
 	char *cmd_sp = cmd;
 	
 	char **args = malloc(sizeof(char *) * MAX_LINE_LEN);
+	char **args_sp = args;
 	for (int i = 0 ; i < MAX_LINE_LEN ; i++) {
 		args[i] = malloc(sizeof(char) * MAX_LINE_LEN);
 	}
 	
 	while (condition != -1) {
 		condition = getline(&buff, &n, stdin);
+
 		if (condition == -1) {
 			break;
 		}
-		pid_array[pid_i] = 0;
+
+		//TODO ALL THE MEMORY LEAKS/ERRORS ARE FIXED: MULTIPROCESS
+		//Implement exec line
+		pid_array[pid_i] = fork();
+
 		if (pid_array[pid_i] < 0) {
 			fprintf(stderr, "ERROR: PROCESS NOT CREATED");
 			exit(EXIT_FAILURE);
@@ -65,29 +72,28 @@ int main(int argc, char *argv[]) {
 		if (pid_array[pid_i] == 0) {
 			int args_i = 0;
 			char *token;
-			//TODO MEMORY LEAKS CAUSED BY THIS CHUNK OF CODE
-			//cmd = strtok_r(buff, delim, &buff);
-			/*	
-			while (token = strtok_r(NULL, delim, &buff)) {
-				args[args_i] = token;
+
+			cmd = strtok_r(buff, " \n", &buff2);
+			while ((token = strtok_r(NULL, " \n", &buff2)) != NULL) {
+				strcpy(args[args_i], token);
 				args_i++;
 			}
-			printf("cmd: %s\n",cmd);
-			for (int i = 0 ; i < args_i ; i++) {
-				printf("arg %d: %s\n", i, args[i]);
-			}
-			*/
+			printf("%s\n",cmd);
+			exit(0);
 		}
+		pid_i++;
 	}
-	
+	for(int i = 0 ; i < pid_i ; i++) {
+		wait(0);
+	}
 	for (int i  = 0 ; i < MAX_LINE_LEN ; i++) {
 		free(args[i]);
 	}
 	free(args);
-	
-	free(cmd);
+	free(cmd_sp);
 	fclose(stdin);
-	free(buff);
+	free(saveptr);
+	free(saveptr2);
 }
 
 
