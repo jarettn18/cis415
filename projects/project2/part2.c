@@ -1,8 +1,8 @@
 /*
 * PROJECT 2
-*	Part 1
+*	Part 2
 *
-* Description: MCP Part 1
+* Description: MCP Part 2
 *
 * Author: Jarett Nishijo
 * Date:
@@ -25,6 +25,12 @@
 
 #define MAX_LINE_LEN 50
 
+void sig_child(pid_t *pid_pool, int size, int sig) {
+	for (int i = 0 ; i < size ; i++) {
+		kill(pid_pool[i], sig);
+	}
+}
+
 int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
@@ -42,6 +48,13 @@ int main(int argc, char *argv[]) {
 
 	pid_t pid_array[25];
 	int pid_i = 0;
+
+	int sig;
+	sigset_t set;
+
+	sigemptyset(&set);
+	sigaddset(&set, SIGUSR1);
+	sigprocmask(SIG_BLOCK, &set, NULL);
 
 	int condition = 1;
 
@@ -78,15 +91,20 @@ int main(int argc, char *argv[]) {
 				args_i++;
 			}
 			args[args_i] = NULL;
+			sigwait(&set, &sig);
 			int exec_succ = execvp(cmd,args);
 			if (exec_succ == -1) {
-				fprintf(stderr,"COMMAND \"%s\" INVALID\n", cmd);
+				fprintf(stderr, "COMMAND \"%s\" INVALID\n",cmd);
 				exit(-1);
 			}
 			exit(0);
 		}
 		pid_i++;
 	}
+	sleep(1);
+	sig_child(pid_array, pid_i, SIGUSR1);
+	sig_child(pid_array, pid_i, SIGSTOP);
+	sig_child(pid_array, pid_i, SIGCONT);
 	for(int i = 0 ; i < pid_i ; i++) {
 		wait(0);
 	}
