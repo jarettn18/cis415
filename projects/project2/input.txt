@@ -1,3 +1,5 @@
-pwd
-ls -a -r
-sleep 3
+ls -a -r -s
+sleep 1
+invalid name
+./iobound -seconds 5
+sleep 1

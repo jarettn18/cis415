@@ -1,8 +1,8 @@
 /*
 * PROJECT 2
-*	Part 3
+*	Part 4
 *
-* Description: MCP Part 3
+* Description: MCP Part 4
 *
 * Author: Jarett Nishijo
 * Date:
@@ -25,14 +25,32 @@
 
 #define MAX_LINE_LEN 50
 
+void print_process_stats(pid_t pid) {
+	char pid_s[100] = {0};
+	sprintf(pid_s,"/proc/%d/status", pid);
+
+	int fd = open(pid_s, O_RDONLY);
+	if (fd == -1) {
+		printf("***NO STATS***\nPROCESS HAS TERMINATED\n");
+		return;
+	}
+	char *buff = malloc(sizeof(char) * 100);
+	for (int i = 0 ; i < 6 ; i++) {
+		int bytes = read(fd, buff, 1);
+		while (strncmp(buff, "\n", 1) != 0) {
+			write(1, buff, bytes);
+			bytes = read(fd, buff, 1);
+		}
+		write(1, "\n", 1);
+	}
+	free(buff);
+	close(fd);
+}
+
 void sig_child(pid_t *pid_pool, int size, int sig) {
 	for (int i = 0 ; i < size ; i++) {
 		kill(pid_pool[i], sig);
 	}
-}
-
-void sig_process(pid_t pid, int sig) {
-	kill(pid, sig);
 }
 
 int alive_process(pid_t *pid_pool, int size) {
@@ -145,24 +163,31 @@ int main(int argc, char *argv[]) {
 	}
 	//fprintf(stdout, "SENDING SIGUSR1\n");
 	sig_child(pid_array, pid_i, SIGUSR1);
+
 	fprintf(stdout, "STOPPING ALL FORKED PROCESSES\n");
 	sig_child(pid_array, pid_i, SIGSTOP);
 	while (alive_process(pid_array, pid_i) == 1){
 		printf("=====Processes alive still=====\n");
 		for (int i = 0 ; i < pid_i ; i++) {
 			alarm(1);
+
 			printf("\nProcess %d: Continued\n",pid_array[i]);
 			kill(pid_array[i], SIGCONT);
+
 			printf("Parent waiting for ALRM\n");
 			sigwait(&parent_set, &parent_sig);
+
 			printf("Parent received ALRM: Stopping process %d\n",pid_array[i]);
 			kill(pid_array[i], SIGSTOP);
 		}
+		for (int i = 0 ; i < pid_i ; i++) {
+			printf("----------------------------------------\n");
+			printf("PROCESS %d STATS\n\n",pid_array[i]);
+			print_process_stats(pid_array[i]);
+			printf("\n--------------------------------------\n");
+		}
 	}
 
-	for(int i = 0 ; i < pid_i ; i++) {
-		wait(0);
-	}
 	for (int i  = 0 ; i < MAX_LINE_LEN ; i++) {
 		free(args[i]);
 	}

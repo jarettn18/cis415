@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
 				strcpy(args[args_i], token);
 				args_i++;
 			}
+			char *args_sp = args[args_i];
 			args[args_i] = NULL;
 			int exec_succ = execvp(cmd,args);
 			if (exec_succ == -1) {
@@ -84,6 +85,7 @@ int main(int argc, char *argv[]) {
 				for (int i  = 0 ; i < MAX_LINE_LEN ; i++) {
 					free(args[i]);
 				}
+				free(args_sp);
 				free(args);
 				free(cmd_sp);
 				fclose(stdin);
