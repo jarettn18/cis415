@@ -1,6 +1,3 @@
 pwd
 ls -a -r
-pwd
-
-notcommand
-   
+sleep 3

@@ -1,8 +1,8 @@
 /*
 * PROJECT 2
-*	Part 2
+*	Part 3
 *
-* Description: MCP Part 2
+* Description: MCP Part 3
 *
 * Author: Jarett Nishijo
 * Date:
@@ -31,6 +31,21 @@ void sig_child(pid_t *pid_pool, int size, int sig) {
 	}
 }
 
+void sig_process(pid_t pid, int sig) {
+	kill(pid, sig);
+}
+
+int alive_process(pid_t *pid_pool, int size) {
+	int status;
+	for (int i = 0 ; i < size ; i++) {
+		pid_t ret_pid = waitpid(pid_pool[i], &status, WNOHANG);
+		if (ret_pid == 0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 int main(int argc, char *argv[]) {
 
 	if (argc != 2) {
@@ -51,6 +66,13 @@ int main(int argc, char *argv[]) {
 
 	int sig;
 	sigset_t set;
+
+	int parent_sig;
+	sigset_t parent_set;
+
+	sigemptyset(&parent_set);
+	sigaddset(&parent_set, SIGALRM);
+	sigprocmask(SIG_BLOCK, &parent_set, NULL);
 
 	sigemptyset(&set);
 	sigaddset(&set, SIGUSR1);
@@ -119,13 +141,23 @@ int main(int argc, char *argv[]) {
 		}
 		pid_i++;
 	}
-	sleep(1);
-	fprintf(stdout, "SENDING SIGUSR1\n");
+	//fprintf(stdout, "SENDING SIGUSR1\n");
 	sig_child(pid_array, pid_i, SIGUSR1);
 	fprintf(stdout, "STOPPING ALL FORKED PROCESSES\n");
 	sig_child(pid_array, pid_i, SIGSTOP);
-	fprintf(stdout, "RESUMING ALL FORKED PROCESSES\n");
-	sig_child(pid_array, pid_i, SIGCONT);
+	while (alive_process(pid_array, pid_i) == 1){
+		printf("=====Processes alive still=====\n");
+		for (int i = 0 ; i < pid_i ; i++) {
+			alarm(1);
+			printf("\nProcess %d: Continued\n",pid_array[i]);
+			kill(pid_array[i], SIGCONT);
+			printf("Parent waiting for ALRM\n");
+			sigwait(&parent_set, &parent_sig);
+			printf("Parent received ALRM: Stopping process %d\n",pid_array[i]);
+			kill(pid_array[i], SIGSTOP);
+		}
+	}
+
 	for(int i = 0 ; i < pid_i ; i++) {
 		wait(0);
 	}

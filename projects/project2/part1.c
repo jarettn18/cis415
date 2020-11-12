@@ -81,8 +81,24 @@ int main(int argc, char *argv[]) {
 			int exec_succ = execvp(cmd,args);
 			if (exec_succ == -1) {
 				fprintf(stderr,"COMMAND \"%s\" INVALID\n", cmd);
+				for (int i  = 0 ; i < MAX_LINE_LEN ; i++) {
+					free(args[i]);
+				}
+				free(args);
+				free(cmd_sp);
+				fclose(stdin);
+				free(saveptr);
+				free(saveptr2);
 				exit(-1);
 			}
+			for (int i  = 0 ; i < MAX_LINE_LEN ; i++) {
+				free(args[i]);
+			}
+			free(args);
+			free(cmd_sp);
+			fclose(stdin);
+			free(saveptr);
+			free(saveptr2);
 			exit(0);
 		}
 		pid_i++;
