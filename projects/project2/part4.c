@@ -5,10 +5,9 @@
 * Description: MCP Part 4
 *
 * Author: Jarett Nishijo
-* Date:
+* Date: 11/12/2020
 * 
 * Notes:
-*
 *
 */
 
@@ -164,22 +163,25 @@ int main(int argc, char *argv[]) {
 	//fprintf(stdout, "SENDING SIGUSR1\n");
 	sig_child(pid_array, pid_i, SIGUSR1);
 
-	fprintf(stdout, "STOPPING ALL FORKED PROCESSES\n");
+	//fprintf(stdout, "STOPPING ALL FORKED PROCESSES\n");
 	sig_child(pid_array, pid_i, SIGSTOP);
+	int i = 1;
 	while (alive_process(pid_array, pid_i) == 1){
-		printf("=====Processes alive still=====\n");
+		printf("=====Processes alive still======\n");
+		printf("iteration: %d\n",i);
 		for (int i = 0 ; i < pid_i ; i++) {
 			alarm(1);
 
 			printf("\nProcess %d: Continued\n",pid_array[i]);
 			kill(pid_array[i], SIGCONT);
 
-			printf("Parent waiting for ALRM\n");
+			printf("Process %d: Waiting for ALRM\n", pid_array[i]);
 			sigwait(&parent_set, &parent_sig);
 
-			printf("Parent received ALRM: Stopping process %d\n",pid_array[i]);
+			printf("Process %d: Received ALRM Stopping process\n",pid_array[i]);
 			kill(pid_array[i], SIGSTOP);
 		}
+		i++;
 		for (int i = 0 ; i < pid_i ; i++) {
 			printf("----------------------------------------\n");
 			printf("PROCESS %d STATS\n\n",pid_array[i]);

@@ -37,27 +37,30 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "ERROR: WRONG NUM OF ARGUMENTS BITCH\n");
 		exit(EXIT_FAILURE);
 	}
-	
+	//Redirect stdin
 	freopen(argv[1], "r+", stdin);
 
+	//Buffer and saveptrs for frees
 	size_t n = (size_t) MAX_LINE_LEN;
 	char *buff = malloc(sizeof(char) * MAX_LINE_LEN);
 	char *buff2 = malloc(sizeof(char) * MAX_LINE_LEN);
 	char *saveptr = buff;
 	char *saveptr2 = buff2;
 
+	//init PID array
 	pid_t pid_array[25];
 	int pid_i = 0;
-
+	
+	//init signal set
 	int sig;
 	sigset_t set;
-
+	//add SIGUSR1
 	sigemptyset(&set);
 	sigaddset(&set, SIGUSR1);
 	sigprocmask(SIG_BLOCK, &set, NULL);
 
 	int condition = 1;
-
+	//cmd and arg array init
 	char *cmd = malloc(sizeof(char) * MAX_LINE_LEN);
 	char *cmd_sp = cmd;
 	
@@ -73,7 +76,7 @@ int main(int argc, char *argv[]) {
 		if (condition == -1) {
 			break;
 		}
-
+		//Getline != null -> Launch subprocess
 		pid_array[pid_i] = fork();
 
 		if (pid_array[pid_i] < 0) {
@@ -92,9 +95,13 @@ int main(int argc, char *argv[]) {
 			}
 			char *args_sp = args[args_i];
 			args[args_i] = NULL;
+
+			//Wait for SIGUSR1 from parent
 			fprintf(stdout, "Process %d: WAITING FOR SIGUSR1\n",getpid());
 			sigwait(&set, &sig);
+			//Received
 			fprintf(stdout, "Process %d: RECEIVED SIGUSR1\n",getpid());
+			//Exec command
 			int exec_succ = execvp(cmd,args);
 			if (exec_succ == -1) {
 				fprintf(stderr, "COMMAND \"%s\" INVALID\n",cmd);
@@ -122,7 +129,7 @@ int main(int argc, char *argv[]) {
 		pid_i++;
 	}
 	sleep(1);
-	fprintf(stdout, "SENDING SIGUSR1\n");
+	fprintf(stdout, "SENDING SIGUSR1\n\n");
 	sig_child(pid_array, pid_i, SIGUSR1);
 	fprintf(stdout, "STOPPING ALL FORKED PROCESSES\n");
 	sig_child(pid_array, pid_i, SIGSTOP);
