@@ -1,15 +1,257 @@
-==2703== Memcheck, a memory error detector
-==2703== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==2703== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==2703== Command: ./a.out
-==2703== 
-ERROR: WRONG NUM OF ARGUMENTS BITCH
-==2703== 
-==2703== HEAP SUMMARY:
-==2703==     in use at exit: 0 bytes in 0 blocks
-==2703==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
-==2703== 
-==2703== All heap blocks were freed -- no leaks are possible
-==2703== 
-==2703== For lists of detected and suppressed errors, rerun with: -s
-==2703== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==2749== Memcheck, a memory error detector
+==2749== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2749== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==2749== Command: ./a.out input.txt
+==2749== 
+total 80
+ 8 part4.c
+ 4 part3.c
+ 4 part2.c
+ 4 part1.c
+ 4 Makefile
+ 4 log*.txt
+ 4 iobound.c
+ 4 input.txt
+ 8 .DS_Store
+ 4 cpubound.c
+ 4 a.out.dSYM
+20 a.out
+ 4 ..
+ 4 .
+COMMAND "invalid" INVALID
+Process 2752: WAITING FOR SIGUSR1
+Process 2752: RECEIVED SIGUSR1
+==2752== 
+==2752== HEAP SUMMARY:
+==2752==     in use at exit: 0 bytes in 0 blocks
+==2752==   total heap usage: 56 allocs, 56 frees, 11,242 bytes allocated
+==2752== 
+==2752== All heap blocks were freed -- no leaks are possible
+==2752== 
+==2752== For lists of detected and suppressed errors, rerun with: -s
+==2752== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+COMMAND "./iobound" INVALID
+Process 2753: WAITING FOR SIGUSR1
+Process 2753: RECEIVED SIGUSR1
+==2753== 
+==2753== HEAP SUMMARY:
+==2753==     in use at exit: 0 bytes in 0 blocks
+==2753==   total heap usage: 56 allocs, 56 frees, 11,242 bytes allocated
+==2753== 
+==2753== All heap blocks were freed -- no leaks are possible
+==2753== 
+==2753== For lists of detected and suppressed errors, rerun with: -s
+==2753== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+COMMAND "./cpubound" INVALID
+Process 2754: WAITING FOR SIGUSR1
+Process 2754: RECEIVED SIGUSR1
+==2754== 
+==2754== HEAP SUMMARY:
+==2754==     in use at exit: 0 bytes in 0 blocks
+==2754==   total heap usage: 56 allocs, 56 frees, 11,242 bytes allocated
+==2754== 
+==2754== All heap blocks were freed -- no leaks are possible
+==2754== 
+==2754== For lists of detected and suppressed errors, rerun with: -s
+==2754== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+COMMAND "./iobound" INVALID
+Process 2755: WAITING FOR SIGUSR1
+Process 2755: RECEIVED SIGUSR1
+==2755== 
+==2755== HEAP SUMMARY:
+==2755==     in use at exit: 0 bytes in 0 blocks
+==2755==   total heap usage: 56 allocs, 56 frees, 11,242 bytes allocated
+==2755== 
+==2755== All heap blocks were freed -- no leaks are possible
+==2755== 
+==2755== For lists of detected and suppressed errors, rerun with: -s
+==2755== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+Name:	ls
+State:	Z (zombie)
+Tgid:	2750
+Ngid:	0
+Pid:	2750
+PPid:	2749
+Name:	sleep
+Umask:	0002
+State:	T (stopped)
+Tgid:	2751
+Ngid:	0
+Pid:	2751
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2752
+Ngid:	0
+Pid:	2752
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2753
+Ngid:	0
+Pid:	2753
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2754
+Ngid:	0
+Pid:	2754
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2755
+Ngid:	0
+Pid:	2755
+PPid:	2749
+Name:	sleep
+State:	Z (zombie)
+Tgid:	2751
+Ngid:	0
+Pid:	2751
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2752
+Ngid:	0
+Pid:	2752
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2753
+Ngid:	0
+Pid:	2753
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2754
+Ngid:	0
+Pid:	2754
+PPid:	2749
+Name:	memcheck-amd64-
+State:	Z (zombie)
+Tgid:	2755
+Ngid:	0
+Pid:	2755
+PPid:	2749
+=====Processes alive still======
+iteration: 1
+
+Process 2750: Continued
+Process 2750: Waiting for ALRM
+Process 2750: Received ALRM Stopping process
+
+Process 2751: Continued
+Process 2751: Waiting for ALRM
+Process 2751: Received ALRM Stopping process
+
+Process 2752: Continued
+Process 2752: Waiting for ALRM
+Process 2752: Received ALRM Stopping process
+
+Process 2753: Continued
+Process 2753: Waiting for ALRM
+Process 2753: Received ALRM Stopping process
+
+Process 2754: Continued
+Process 2754: Waiting for ALRM
+Process 2754: Received ALRM Stopping process
+
+Process 2755: Continued
+Process 2755: Waiting for ALRM
+Process 2755: Received ALRM Stopping process
+----------------------------------------
+PROCESS 2750 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2751 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2752 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2753 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2754 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2755 STATS
+
+
+--------------------------------------
+=====Processes alive still======
+iteration: 2
+
+Process 2750: Continued
+Process 2750: Waiting for ALRM
+Process 2750: Received ALRM Stopping process
+
+Process 2751: Continued
+Process 2751: Waiting for ALRM
+Process 2751: Received ALRM Stopping process
+
+Process 2752: Continued
+Process 2752: Waiting for ALRM
+Process 2752: Received ALRM Stopping process
+
+Process 2753: Continued
+Process 2753: Waiting for ALRM
+Process 2753: Received ALRM Stopping process
+
+Process 2754: Continued
+Process 2754: Waiting for ALRM
+Process 2754: Received ALRM Stopping process
+
+Process 2755: Continued
+Process 2755: Waiting for ALRM
+Process 2755: Received ALRM Stopping process
+----------------------------------------
+PROCESS 2750 STATS
+
+***NO STATS***
+PROCESS HAS TERMINATED
+
+--------------------------------------
+----------------------------------------
+PROCESS 2751 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2752 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2753 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2754 STATS
+
+
+--------------------------------------
+----------------------------------------
+PROCESS 2755 STATS
+
+
+--------------------------------------
+==2749== 
+==2749== HEAP SUMMARY:
+==2749==     in use at exit: 0 bytes in 0 blocks
+==2749==   total heap usage: 67 allocs, 67 frees, 12,342 bytes allocated
+==2749== 
+==2749== All heap blocks were freed -- no leaks are possible
+==2749== 
+==2749== For lists of detected and suppressed errors, rerun with: -s
+==2749== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
