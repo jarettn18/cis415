@@ -76,6 +76,7 @@ int enqueue(char *MTQ_ID, struct mealTicket *MT) {
 		return 1;
 	}
 }
+//TODO Write dequeue method
 
 int main(int argc, char *argv[]) {
 	struct MTQ *Breakfast = malloc(sizeof(struct MTQ));
@@ -112,6 +113,10 @@ int main(int argc, char *argv[]) {
 	for(int i = 0 ; i < MAXQUEUES ; i++) {
 		destroy(registry[i]);
 	}
+	free(bacon);
+	free(eggs);
+	free(rice);
+	free(extra);
 }
 		
 		
