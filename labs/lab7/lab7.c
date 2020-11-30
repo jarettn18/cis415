@@ -200,13 +200,13 @@ void *subscriber(void *args)
 	pthread_mutex_unlock(&cm);
 	printf("TYPE: SUBSCRIBER || THREAD ID: %u\n", TID);
 	int success = dequeue(arg->MTQ_ID, arg->MT);
-	if (success == 0) {
-		fprintf(stdout, "THREAD ID %u: Queue is empty\n",TID);
+	while (success != 0) {
 		sleep(1);
-	}
-	else {
 		fprintf(stdout, "THREAD ID %u: popped Meal Ticket %s\n",TID, arg->MT->dish_name);
+		success = dequeue(arg->MTQ_ID, arg->MT);
+
 	}
+	fprintf(stdout, "THREAD ID %u: Queue is empty\n",TID);
 }
 
 int main(int argc, char *argv[]) {

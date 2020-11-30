@@ -1,37 +1,57 @@
-TYPE: PUBLISHER || THREAD 3743917824: WAITING FOR SIGNAL
-TYPE: PUBLISHER || THREAD 3752310528: WAITING FOR SIGNAL
-TYPE: PUBLISHER || THREAD 3760703232: WAITING FOR SIGNAL
-TYPE: PUBLISHER || THREAD 3769095936: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 3668666112: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 3677058816: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 3685451520: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 3693844224: WAITING FOR SIGNAL
 Broadcasting
-TYPE: PUBLISHER || THREAD ID: 3743917824
+TYPE: PUBLISHER || THREAD ID: 3668666112
 pushing: Queue Bar - Ticket Number: 0 - Dish Whiskey
-TYPE: PUBLISHER || THREAD ID: 3752310528
+TYPE: PUBLISHER || THREAD ID: 3677058816
 pushing: Queue Dinner - Ticket Number: 0 - Dish Steak
-TYPE: PUBLISHER || THREAD ID: 3760703232
+TYPE: PUBLISHER || THREAD ID: 3685451520
 pushing: Queue Lunch - Ticket Number: 0 - Dish Burger
-TYPE: PUBLISHER || THREAD ID: 3769095936
+TYPE: PUBLISHER || THREAD ID: 3693844224
 pushing: Queue Breakfast - Ticket Number: 0 - Dish Eggs
-TYPE: SUBSCRIBER || THREAD 3718739712: WAITING FOR SIGNAL
-TYPE: SUBSCRIBER || THREAD 3710347008: WAITING FOR SIGNAL
-TYPE: SUBSCRIBER || THREAD 3727132416: WAITING FOR SIGNAL
-TYPE: SUBSCRIBER || THREAD 3735525120: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 3643488000: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 3635095296: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 3651880704: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 3660273408: WAITING FOR SIGNAL
 pushing: Queue Bar - Ticket Number: 0 - Dish Sake
 pushing: Queue Dinner - Ticket Number: 0 - Dish Greens
 pushing: Queue Lunch - Ticket Number: 0 - Dish Fries
 pushing: Queue Breakfast - Ticket Number: 0 - Dish Bacon
-TYPE: SUBSCRIBER || THREAD ID: -584620288
+TYPE: SUBSCRIBER || THREAD ID: 3635095296
 popping: Queue Bar - Ticket Number: 0 - Dish Whiskey
-THREAD ID 3710347008: popped Meal Ticket Whiskey
-TYPE: SUBSCRIBER || THREAD ID: -576227584
+TYPE: SUBSCRIBER || THREAD ID: 3643488000
 popping: Queue Dinner - Ticket Number: 0 - Dish Steak
-THREAD ID 3718739712: popped Meal Ticket Steak
-TYPE: SUBSCRIBER || THREAD ID: -567834880
+TYPE: SUBSCRIBER || THREAD ID: 3651880704
 popping: Queue Lunch - Ticket Number: 0 - Dish Burger
-THREAD ID 3727132416: popped Meal Ticket Burger
-TYPE: SUBSCRIBER || THREAD ID: -559442176
+TYPE: SUBSCRIBER || THREAD ID: 3660273408
 popping: Queue Breakfast - Ticket Number: 0 - Dish Eggs
-THREAD ID 3735525120: popped Meal Ticket Eggs
 pushing: Queue Bar - Ticket Number: 0 - Dish Wine
 pushing: Queue Dinner - Ticket Number: 0 - Dish Pie
 pushing: Queue Lunch - Ticket Number: 0 - Dish Coke
 pushing: Queue Breakfast - Ticket Number: 0 - Dish Steak
+THREAD ID 3635095296: popped Meal Ticket Whiskey
+popping: Queue Bar - Ticket Number: 0 - Dish Sake
+THREAD ID 3643488000: popped Meal Ticket Steak
+popping: Queue Dinner - Ticket Number: 0 - Dish Greens
+THREAD ID 3651880704: popped Meal Ticket Burger
+popping: Queue Lunch - Ticket Number: 0 - Dish Fries
+THREAD ID 3660273408: popped Meal Ticket Eggs
+popping: Queue Breakfast - Ticket Number: 0 - Dish Bacon
+THREAD ID 3643488000: popped Meal Ticket Greens
+popping: Queue Dinner - Ticket Number: 0 - Dish Pie
+THREAD ID 3635095296: popped Meal Ticket Sake
+popping: Queue Bar - Ticket Number: 0 - Dish Wine
+THREAD ID 3651880704: popped Meal Ticket Fries
+popping: Queue Lunch - Ticket Number: 0 - Dish Coke
+THREAD ID 3660273408: popped Meal Ticket Bacon
+popping: Queue Breakfast - Ticket Number: 0 - Dish Steak
+THREAD ID 3635095296: popped Meal Ticket Wine
+THREAD ID 3643488000: popped Meal Ticket Pie
+THREAD ID 3651880704: popped Meal Ticket Coke
+THREAD ID 3635095296: Queue is empty
+THREAD ID 3643488000: Queue is empty
+THREAD ID 3651880704: Queue is empty
+THREAD ID 3660273408: popped Meal Ticket Steak
+THREAD ID 3660273408: Queue is empty

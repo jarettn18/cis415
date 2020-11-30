@@ -1,0 +1,57 @@
+TYPE: PUBLISHER || THREAD 4232337152: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 4240729856: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 4249122560: WAITING FOR SIGNAL
+TYPE: PUBLISHER || THREAD 4257515264: WAITING FOR SIGNAL
+Broadcasting
+TYPE: PUBLISHER || THREAD ID: 4232337152
+pushing: Queue Bar - Ticket Number: 0 - Dish Whiskey
+TYPE: PUBLISHER || THREAD ID: 4240729856
+pushing: Queue Dinner - Ticket Number: 0 - Dish Steak
+TYPE: PUBLISHER || THREAD ID: 4249122560
+pushing: Queue Lunch - Ticket Number: 0 - Dish Burger
+TYPE: PUBLISHER || THREAD ID: 4257515264
+pushing: Queue Breakfast - Ticket Number: 0 - Dish Eggs
+TYPE: SUBSCRIBER || THREAD 4207159040: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 4198766336: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 4215551744: WAITING FOR SIGNAL
+TYPE: SUBSCRIBER || THREAD 4223944448: WAITING FOR SIGNAL
+pushing: Queue Bar - Ticket Number: 0 - Dish Sake
+pushing: Queue Dinner - Ticket Number: 0 - Dish Greens
+pushing: Queue Lunch - Ticket Number: 0 - Dish Fries
+pushing: Queue Breakfast - Ticket Number: 0 - Dish Bacon
+TYPE: SUBSCRIBER || THREAD ID: 4198766336
+popping: Queue Bar - Ticket Number: 0 - Dish Whiskey
+TYPE: SUBSCRIBER || THREAD ID: 4207159040
+popping: Queue Dinner - Ticket Number: 0 - Dish Steak
+TYPE: SUBSCRIBER || THREAD ID: 4215551744
+popping: Queue Lunch - Ticket Number: 0 - Dish Burger
+TYPE: SUBSCRIBER || THREAD ID: 4223944448
+popping: Queue Breakfast - Ticket Number: 0 - Dish Eggs
+pushing: Queue Bar - Ticket Number: 0 - Dish Wine
+pushing: Queue Dinner - Ticket Number: 0 - Dish Pie
+pushing: Queue Lunch - Ticket Number: 0 - Dish Coke
+pushing: Queue Breakfast - Ticket Number: 0 - Dish Steak
+THREAD ID 4198766336: popped Meal Ticket Whiskey
+popping: Queue Bar - Ticket Number: 0 - Dish Sake
+THREAD ID 4207159040: popped Meal Ticket Steak
+popping: Queue Dinner - Ticket Number: 0 - Dish Greens
+THREAD ID 4215551744: popped Meal Ticket Burger
+popping: Queue Lunch - Ticket Number: 0 - Dish Fries
+THREAD ID 4223944448: popped Meal Ticket Eggs
+popping: Queue Breakfast - Ticket Number: 0 - Dish Bacon
+THREAD ID 4207159040: popped Meal Ticket Greens
+popping: Queue Dinner - Ticket Number: 0 - Dish Pie
+THREAD ID 4198766336: popped Meal Ticket Sake
+popping: Queue Bar - Ticket Number: 0 - Dish Wine
+THREAD ID 4215551744: popped Meal Ticket Fries
+popping: Queue Lunch - Ticket Number: 0 - Dish Coke
+THREAD ID 4223944448: popped Meal Ticket Bacon
+popping: Queue Breakfast - Ticket Number: 0 - Dish Steak
+THREAD ID 4198766336: popped Meal Ticket Wine
+THREAD ID 4207159040: popped Meal Ticket Pie
+THREAD ID 4215551744: popped Meal Ticket Coke
+THREAD ID 4198766336: Queue is empty
+THREAD ID 4207159040: Queue is empty
+THREAD ID 4215551744: Queue is empty
+THREAD ID 4223944448: popped Meal Ticket Steak
+THREAD ID 4223944448: Queue is empty
