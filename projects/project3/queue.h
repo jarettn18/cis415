@@ -31,8 +31,29 @@ typedef struct
 	pthread_mutex_t mutex;
 }topicQueue;
 
-int enqueue(topicQueue * queue, topicEntry *entry);
-int dequeue(topicEntry *empty_entry);
-int getEntry(int lastEntry, topicEntry *empty_entry);
+typedef struct
+{
+	topicEntry **entry_array;
+	int TID;
+	int numEntries;
+}pub_args;
+
+typedef struct
+{	
+	int lastEntry;
+	topicEntry *empty;
+}sub_args;
+
+typedef struct
+{
+	topicEntry *empty;
+}cleanup_args;
+
+int enqueue(topicQueue *queue, topicEntry *entry);
+int dequeue(topicQueue *queue, topicEntry *empty);
+int getEntry(int lastEntry, topicEntry *empty);
+void *publisher(void *args);
+void *subscriber(void *args);
+void *cleanup(void *args);
 
 #endif
