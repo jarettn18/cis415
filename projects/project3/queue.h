@@ -28,6 +28,7 @@ typedef struct
 	int head;
 	int tail;
 	int length;
+	int count;
 	pthread_mutex_t mutex;
 }topicQueue;
 

@@ -16,6 +16,7 @@
 /* ================ Definitions and Global Variables ==============*/
 #define MAXENTRY 4
 #define DELTA 4
+#define MAXQUEUES 4
 topicQueue q;
 
 
@@ -43,6 +44,7 @@ void init_topicQueue(topicQueue *queue, char *name)
 	queue->head = 0;
 	queue->tail = 0;
 	queue->length = 0;
+	queue->count = 0;
 }
 
 void display_Q(topicQueue *queue)
@@ -52,9 +54,10 @@ void display_Q(topicQueue *queue)
 	}
 	else {
 		printf("QUEUE: %s\n",queue->name);
-		for (int i = 0 ; i < queue->length ; i++) {
+		for (int i = 0 ; i < MAXENTRY ; i++) {
 			printf("\tTicket %d: %d\n",queue->buffer[i]->entryNum,queue->buffer[i]->pubID);
 		}
+		printf(" TAIL: %d HEAD: %d LENGTH: %d\n",queue->tail, queue->head, queue->length);
 	}
 }
 
@@ -72,6 +75,7 @@ void *publisher(void *args)
 		fprintf(stdout,"TID %lu: pushing\n",pthread_self());
 		int enq_success = enqueue(&q, pub_args->entry_array[i]);
 		if (enq_success == 0) {
+			printf("Queue full: Yielding\n");
 			while (enq_success == 0) {
 				sched_yield();
 				enq_success = enqueue(&q, pub_args->entry_array[i]);
@@ -84,25 +88,34 @@ void *publisher(void *args)
 void *subscriber(void *args)
 {
 	sub_args *sub_args = args;
-	while (1) {
+	int i = 1;
+	while (i != 10) {
 		int get_entry = getEntry(sub_args->lastEntry, sub_args->empty);
 		if (get_entry == 0) {
+			printf("sleeping %d\n",i);
 			sleep(3);
 		}
-		else {
-			printf("TID %lu: Read Entry %d\n",pthread_self(), sub_args->lastEntry);
+		else if (get_entry == 1){
+			printf("TID %lu: Read Entry %d last entry %d\n",pthread_self(), sub_args->empty->entryNum, sub_args->lastEntry);
 			sub_args->lastEntry++;
 			sleep(1);
 		}
+		else {
+			printf("TID %lu: Read Entry %d last entry %d\n",pthread_self(), sub_args->empty->entryNum, sub_args->lastEntry);
+			sub_args->lastEntry = get_entry;
+			sleep(1);
+		}
+		i++;
 	}
 }
 
 void *cleanup(void *args)
 {
 	cleanup_args *cl_args = args;
-	while(1) {
-		sleep(5);
-		dequeue(&q, cl_args->empty);
+	int deq_succ = 1;
+	while(deq_succ == 1) {
+		sleep(3);
+		deq_succ = dequeue(&q, cl_args->empty);
 	}
 }
 
@@ -119,10 +132,11 @@ int enqueue(topicQueue *queue, topicEntry *entry)
 		return 0;
 	}
 	else {
-		fprintf(stdout, "Pushing entry %d to queue %s\n",queue->length+1, queue->name);
+		fprintf(stdout, "\nPushing entry %d to queue %s\n",queue->count+1, queue->name);
 		queue->length++;
+		queue->count++;
 		queue->buffer[queue->head] = entry;
-		entry->entryNum = queue->length;
+		entry->entryNum = queue->count;
 		gettimeofday(&entry->timeStamp, NULL);
 		queue->head++;
 		if (queue->head == MAXENTRY) {
@@ -136,7 +150,6 @@ int enqueue(topicQueue *queue, topicEntry *entry)
 int dequeue(topicQueue *queue, topicEntry *empty)
 {
 	int aquire = pthread_mutex_lock(&queue->mutex);
-
 	if (queue->length == 0)
 	{
 		fprintf(stderr, "Error: Queue %s is empty\n", queue->name);
@@ -145,16 +158,16 @@ int dequeue(topicQueue *queue, topicEntry *empty)
 	}
 	else {
 		fprintf(stdout, "Dequeueing from queue %s\n",queue->name);
+		queue->length--;
 		empty->entryNum = queue->buffer[queue->tail]->entryNum;
 		empty->pubID = queue->buffer[queue->tail]->pubID;
 		queue->buffer[queue->tail]->pubID = 0;
-		queue->buffer[queue->tail]->entryNum = 9999;
+		queue->buffer[queue->tail]->entryNum = -1;
 		queue->tail++;
 		if (queue->tail == MAXENTRY)
 		{
 			queue->tail = 0;
 		}
-		queue->length--;
 		pthread_mutex_unlock(&queue->mutex);
 		return 1;
 	}
@@ -164,7 +177,6 @@ int getEntry(int lastEntry, topicEntry *empty)
 {
 	int aquire = pthread_mutex_lock(&q.mutex);
 	int lt = 1;
-
 	//Case 1 empty queue
 	if (q.length == 0) {
 		pthread_mutex_unlock(&q.mutex);
@@ -173,22 +185,24 @@ int getEntry(int lastEntry, topicEntry *empty)
 	//Case 3b first entry has number >= last entry + 1
 	if (q.buffer[q.tail]->entryNum >= (lastEntry + 1)) 
 	{
-		empty = q.buffer[q.tail];
+		empty->entryNum = q.buffer[q.tail]->entryNum;
+		empty->pubID = q.buffer[q.tail]->pubID;
 		pthread_mutex_unlock(&q.mutex);
 		return empty->entryNum;
 	}
 	//Case 2 last entry + 1 in queue
 	for (int i = 0 ; i < q.length ; i++) {
-		int current_i =  q.tail + i;
-		if (current_i > MAXENTRY) {
-			current_i = 0;
+		int current_i = q.tail + i;
+		if (current_i >= MAXENTRY) {
+			current_i = current_i - MAXENTRY;
 		}
-		if (q.buffer[current_i]->entryNum == (lastEntry + 1)) {
-			empty = q.buffer[current_i];
+		if (q.buffer[current_i]->entryNum == lastEntry + 1) {
+			empty->entryNum = q.buffer[current_i]->entryNum;
+			empty->pubID = q.buffer[current_i]->pubID;
 			pthread_mutex_unlock(&q.mutex);
 			return 1;
 		}
-		if (q.buffer[current_i]->entryNum > (lastEntry + 1)) {
+		if (q.buffer[current_i]->entryNum > lastEntry + 1) {
 			lt = 0;
 		}
 	}
@@ -199,53 +213,66 @@ int getEntry(int lastEntry, topicEntry *empty)
 		return 0;
 	}
 }
-
+/*
 int main()
 {
 	init_mutex(&q);
-	init_topicQueue(&q, "Test");
+	init_topicQueue(&q, "Test1");
 
 	topicEntry *e1 = malloc(sizeof(topicEntry));
 	topicEntry *e2 = malloc(sizeof(topicEntry));
 	topicEntry *e3 = malloc(sizeof(topicEntry));
 	topicEntry *e4 = malloc(sizeof(topicEntry));
 	topicEntry *e5 = malloc(sizeof(topicEntry));
+	topicEntry *e6 = malloc(sizeof(topicEntry));
 	topicEntry *empty = malloc(sizeof(topicEntry));
 	init_topicEntry(e1, 54321);
 	init_topicEntry(e2, 2345);
 	init_topicEntry(e3, 23452);
 	init_topicEntry(e4, 23453);
 	init_topicEntry(e5, 23454);
+	init_topicEntry(e6, 23455);
 
-	topicEntry *entry_array[5] = {e1, e2, e3, e4, e5};
+	topicEntry *entry_array[6] = {e1, e2, e3, e4, e5, e6};
 	pub_args *pub_arg = malloc(sizeof(pub_args));
 	pub_arg->entry_array = entry_array;
-	pub_arg->numEntries = 5;
+	pub_arg->numEntries = 4;
 
 	cleanup_args *cl_args = malloc(sizeof(cleanup_args));
 	cl_args->empty = malloc(sizeof(topicEntry));
 	sub_args *sub_arg = malloc(sizeof(sub_args));
 	sub_arg->lastEntry = 0;
 	sub_arg->empty = malloc(sizeof(topicEntry));
+	sub_arg->empty->entryNum = 0;
 
-	pthread_t p1, s1, cl1;
+	pthread_t p1, p2, s1, s2, cl1;
 	pthread_create(&p1, NULL, publisher, pub_arg);
+	pthread_create(&p2, NULL, publisher, pub_arg);
 	pthread_create(&s1, NULL, subscriber, sub_arg);
+	pthread_create(&s2, NULL, subscriber, sub_arg);
 	pthread_create(&cl1, NULL, cleanup, cl_args);
 	pthread_join(p1,NULL);
+	pthread_join(p2,NULL);
 	pthread_join(s1,NULL);
+	pthread_join(s2,NULL);
 	pthread_join(cl1,NULL);
 	
-	//dequeue(q, empty);
-
-	//display_Q(&q);
+	//dequeue(&q, empty);
+	//enqueue(&q, e5);
+	display_Q(&q);
 
 	destroy(&q);
 	free(pub_arg);
+	free(sub_arg->empty);
+	free(cl_args->empty);
+	free(sub_arg);
+	free(cl_args);
 	free(e1);
 	free(e2);
 	free(e3);
 	free(e4);
 	free(e5);
+	free(e6);
 	free(empty);
 }
+*/
