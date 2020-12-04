@@ -8,10 +8,6 @@
 #ifndef QUEUE_H_
 #define QUEUE_H_
 
-#define URLSIZE 100
-#define CAPSIZE 250
-#define MAXNAME 25
-
 typedef struct
 {
 	int entryNum;
@@ -35,6 +31,7 @@ typedef struct
 typedef struct
 {
 	topicEntry **entry_array;
+	int *pos_array;
 	int TID;
 	int numEntries;
 }pub_args;
@@ -43,16 +40,18 @@ typedef struct
 {	
 	int lastEntry;
 	topicEntry *empty;
+	int pos;
 }sub_args;
 
 typedef struct
 {
 	topicEntry *empty;
+	int queue_i;
 }cleanup_args;
 
-int enqueue(topicQueue *queue, topicEntry *entry);
+int enqueue(int pos, topicEntry *entry);
 int dequeue(topicQueue *queue, topicEntry *empty);
-int getEntry(int lastEntry, topicEntry *empty);
+int getEntry(int lastEntry, topicEntry *empty, int pos);
 void *publisher(void *args);
 void *subscriber(void *args);
 void *cleanup(void *args);

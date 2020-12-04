@@ -14,10 +14,11 @@
 #include "queue.h"
 
 /* ================ Definitions and Global Variables ==============*/
+
 #define MAXENTRY 4
-#define DELTA 4
+#define DELTA 15
 #define MAXQUEUES 4
-topicQueue q;
+topicQueue registry[MAXQUEUES];
 
 
 /* ================= init/free and helper functions ===============*/
@@ -50,6 +51,7 @@ void init_topicQueue(topicQueue *queue, char *name)
 void display_Q(topicQueue *queue)
 {
 	if (queue->length == 0) {
+		printf("QUEUE: %s\n",queue->name);
 		printf("QUEUE is empty\n");
 	}
 	else {
@@ -73,76 +75,84 @@ void *publisher(void *args)
 	pub_args *pub_args = args;
 	for (int i = 0 ; i < pub_args->numEntries ; i++) {
 		fprintf(stdout,"TID %lu: pushing\n",pthread_self());
-		int enq_success = enqueue(&q, pub_args->entry_array[i]);
+		int enq_success = enqueue(pub_args->pos_array[i], pub_args->entry_array[i]);
 		if (enq_success == 0) {
 			printf("Queue full: Yielding\n");
 			while (enq_success == 0) {
 				sched_yield();
-				enq_success = enqueue(&q, pub_args->entry_array[i]);
+				enq_success = enqueue(pub_args->pos_array[i],pub_args->entry_array[i]);
 			}
 		}
 	}
-		
 }
 
 void *subscriber(void *args)
 {
 	sub_args *sub_args = args;
-	int i = 1;
-	while (i != 10) {
-		int get_entry = getEntry(sub_args->lastEntry, sub_args->empty);
+	while (1) {
+		int get_entry = getEntry(sub_args->lastEntry, sub_args->empty, sub_args->pos);
 		if (get_entry == 0) {
-			printf("sleeping %d\n",i);
+			printf("Subscriber: Waiting for more entries\n");
 			sleep(3);
 		}
 		else if (get_entry == 1){
-			printf("TID %lu: Read Entry %d last entry %d\n",pthread_self(), sub_args->empty->entryNum, sub_args->lastEntry);
+			printf("TID %lu: Read Entry %d\n",pthread_self(), sub_args->empty->entryNum);
 			sub_args->lastEntry++;
 			sleep(1);
 		}
 		else {
-			printf("TID %lu: Read Entry %d last entry %d\n",pthread_self(), sub_args->empty->entryNum, sub_args->lastEntry);
+			printf("TID %lu: Read Entry %d\n",pthread_self(), sub_args->empty->entryNum);
 			sub_args->lastEntry = get_entry;
 			sleep(1);
 		}
-		i++;
 	}
 }
 
 void *cleanup(void *args)
 {
 	cleanup_args *cl_args = args;
-	int deq_succ = 1;
-	while(deq_succ == 1) {
-		sleep(3);
-		deq_succ = dequeue(&q, cl_args->empty);
+	struct timeval current_time;
+	while (1) {
+	for (int i = 0 ; i < MAXQUEUES ; i++) {
+		double total_elapsed = 0;
+		if (registry[i].length > 0 ) {
+			gettimeofday(&current_time,NULL);
+			double elapsed_sec = (current_time.tv_sec - registry[i].buffer[registry[i].tail]->timeStamp.tv_sec) * 1000;
+			double elapsed_usec = (current_time.tv_usec - registry[i].buffer[registry[i].tail]->timeStamp.tv_usec) / 1000;
+			total_elapsed = elapsed_sec + elapsed_usec;
+		}
+		if ((total_elapsed/1000) > DELTA) {
+			printf("Queue %s: Oldest entry is %.2f sec\n",registry[i].name,total_elapsed/1000);
+			dequeue(&registry[i], cl_args->empty);
+		}
+	}
 	}
 }
 
 /* ====================== Main Functions ===================== */
 
-int enqueue(topicQueue *queue, topicEntry *entry)
+int enqueue(int pos, topicEntry *entry)
 {
-	int aquire = pthread_mutex_lock(&queue->mutex);
-
-	if (queue->length == MAXENTRY) 
+	int aquire = pthread_mutex_lock(&registry[pos].mutex);
+	
+	if (registry[pos].length == MAXENTRY) 
 	{
 		//fprintf(stderr, "Error: Queue %s is full\n",queue->name);
-		pthread_mutex_unlock(&queue->mutex);
+		pthread_mutex_unlock(&registry[pos].mutex);
 		return 0;
 	}
 	else {
-		fprintf(stdout, "\nPushing entry %d to queue %s\n",queue->count+1, queue->name);
-		queue->length++;
-		queue->count++;
-		queue->buffer[queue->head] = entry;
-		entry->entryNum = queue->count;
+		fprintf(stdout, "\nPushing entry %d to queue %s\n",registry[pos].count+1, registry[pos].name);
+		registry[pos].length++;
+		registry[pos].count++;
+		registry[pos].buffer[registry[pos].head] = entry;
+		entry->entryNum = registry[pos].count;
 		gettimeofday(&entry->timeStamp, NULL);
-		queue->head++;
-		if (queue->head == MAXENTRY) {
-			queue->head = 0;
+		registry[pos].head++;
+		if (registry[pos].head == MAXENTRY) {
+			registry[pos].head = 0;
 		}
-		pthread_mutex_unlock(&queue->mutex);
+		pthread_mutex_unlock(&registry[pos].mutex);
 		return 1;
 	}
 }
@@ -173,43 +183,43 @@ int dequeue(topicQueue *queue, topicEntry *empty)
 	}
 }
 
-int getEntry(int lastEntry, topicEntry *empty)
+int getEntry(int lastEntry, topicEntry *empty, int pos)
 {
-	int aquire = pthread_mutex_lock(&q.mutex);
+	int aquire = pthread_mutex_lock(&registry[pos].mutex);
 	int lt = 1;
 	//Case 1 empty queue
-	if (q.length == 0) {
-		pthread_mutex_unlock(&q.mutex);
+	if (registry[pos].length == 0) {
+		pthread_mutex_unlock(&registry[pos].mutex);
 		return 0;
 	}
 	//Case 3b first entry has number >= last entry + 1
-	if (q.buffer[q.tail]->entryNum >= (lastEntry + 1)) 
+	if (registry[pos].buffer[registry[pos].tail]->entryNum >= (lastEntry + 1)) 
 	{
-		empty->entryNum = q.buffer[q.tail]->entryNum;
-		empty->pubID = q.buffer[q.tail]->pubID;
-		pthread_mutex_unlock(&q.mutex);
+		empty->entryNum = registry[pos].buffer[registry[pos].tail]->entryNum;
+		empty->pubID = registry[pos].buffer[registry[pos].tail]->pubID;
+		pthread_mutex_unlock(&registry[pos].mutex);
 		return empty->entryNum;
 	}
 	//Case 2 last entry + 1 in queue
-	for (int i = 0 ; i < q.length ; i++) {
-		int current_i = q.tail + i;
+	for (int i = 0 ; i < registry[pos].length ; i++) {
+		int current_i = registry[pos].tail + i;
 		if (current_i >= MAXENTRY) {
 			current_i = current_i - MAXENTRY;
 		}
-		if (q.buffer[current_i]->entryNum == lastEntry + 1) {
-			empty->entryNum = q.buffer[current_i]->entryNum;
-			empty->pubID = q.buffer[current_i]->pubID;
-			pthread_mutex_unlock(&q.mutex);
+		if (registry[pos].buffer[current_i]->entryNum == lastEntry + 1) {
+			empty->entryNum = registry[pos].buffer[current_i]->entryNum;
+			empty->pubID = registry[pos].buffer[current_i]->pubID;
+			pthread_mutex_unlock(&registry[pos].mutex);
 			return 1;
 		}
-		if (q.buffer[current_i]->entryNum > lastEntry + 1) {
+		if (registry[pos].buffer[current_i]->entryNum > lastEntry + 1) {
 			lt = 0;
 		}
 	}
 	//Case 3 last entry + 1 is not in queue
 	//	a. all entries are <= last entry + 1
 	if (lt == 1) {
-		pthread_mutex_unlock(&q.mutex);
+		pthread_mutex_unlock(&registry[pos].mutex);
 		return 0;
 	}
 }
