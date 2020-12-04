@@ -31,7 +31,7 @@ typedef struct
 typedef struct
 {
 	topicEntry **entry_array;
-	int *pos_array;
+	int pos_array[5];
 	int TID;
 	int numEntries;
 }pub_args;

@@ -19,6 +19,8 @@
 #define DELTA 15
 #define MAXQUEUES 4
 topicQueue registry[MAXQUEUES];
+pthread_cond_t cv;
+pthread_mutex_t cm;
 
 
 /* ================= init/free and helper functions ===============*/
@@ -72,9 +74,11 @@ void destroy(topicQueue *queue)
 
 void *publisher(void *args)
 {
+	pthread_cond_wait(&cv, &cm);
+	pthread_mutex_unlock(&cm);
 	pub_args *pub_args = args;
 	for (int i = 0 ; i < pub_args->numEntries ; i++) {
-		fprintf(stdout,"TID %lu: pushing\n",pthread_self());
+		fprintf(stdout,"\nTID %lu: pushing\n",pthread_self());
 		int enq_success = enqueue(pub_args->pos_array[i], pub_args->entry_array[i]);
 		if (enq_success == 0) {
 			printf("Queue full: Yielding\n");
@@ -110,8 +114,9 @@ void *subscriber(void *args)
 
 void *cleanup(void *args)
 {
-	cleanup_args *cl_args = args;
+	//cleanup_args *cl_args = args;
 	struct timeval current_time;
+	int deq_succ = 1; 
 	while (1) {
 	for (int i = 0 ; i < MAXQUEUES ; i++) {
 		double total_elapsed = 0;
@@ -123,7 +128,7 @@ void *cleanup(void *args)
 		}
 		if ((total_elapsed/1000) > DELTA) {
 			printf("Queue %s: Oldest entry is %.2f sec\n",registry[i].name,total_elapsed/1000);
-			dequeue(&registry[i], cl_args->empty);
+			dequeue(&registry[i],NULL); //cl_args->empty);
 		}
 	}
 	}
@@ -142,7 +147,7 @@ int enqueue(int pos, topicEntry *entry)
 		return 0;
 	}
 	else {
-		fprintf(stdout, "\nPushing entry %d to queue %s\n",registry[pos].count+1, registry[pos].name);
+		fprintf(stdout, "Pushing entry %d to queue %s\n",registry[pos].count+1, registry[pos].name);
 		registry[pos].length++;
 		registry[pos].count++;
 		registry[pos].buffer[registry[pos].head] = entry;
@@ -169,8 +174,10 @@ int dequeue(topicQueue *queue, topicEntry *empty)
 	else {
 		fprintf(stdout, "Dequeueing from queue %s\n",queue->name);
 		queue->length--;
+		/*
 		empty->entryNum = queue->buffer[queue->tail]->entryNum;
 		empty->pubID = queue->buffer[queue->tail]->pubID;
+		*/
 		queue->buffer[queue->tail]->pubID = 0;
 		queue->buffer[queue->tail]->entryNum = -1;
 		queue->tail++;

@@ -23,8 +23,6 @@
 #include "queue.c"
 
 /* ======================== Global Variables and Structs =================*/
-pthread_cond_t cv;
-pthread_mutex_t cm;
 
 typedef struct {
 	int flag;
@@ -54,6 +52,9 @@ int get_freeThread(proxyThread *pool)
 
 int main(int argc, char *argv[])
 {
+	//Cond Var and Cond Mut init
+	pthread_cond_init(&cv, NULL);
+	pthread_mutex_init(&cm, NULL);
 	//Topic Store init
 	for (int i = 0 ; i < MAXQUEUES ; i++) {
 		char str[8];
@@ -63,29 +64,79 @@ int main(int argc, char *argv[])
 	}
 	//Proxy Thread Pools
 	//	a. Publishers
-	topicEntry *array[NUMPROXIES / 2][5];
+
+	int pos_array1[5] = {1, 0, 2, 3, 0};
+	int pos_array2[5] = {1, 2, 3, 0, 1};
+	int pos_array3[5] = {2, 1, 3, 0, 2};
+	int pos_array4[5] = {0, 1, 2, 3, 3};
 
 	pub_args parg[NUMPROXIES / 2];
+	memcpy(parg[0].pos_array, pos_array1, 20);
+	memcpy(parg[1].pos_array, pos_array2, 20);
+	memcpy(parg[2].pos_array, pos_array3, 20);
+	memcpy(parg[3].pos_array, pos_array4, 20);
 
-	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
-		for (int j = 0 ; j < 5 ; j++) {
-			init_topicEntry(array[i][j],123);
-		}
-		parg[i].entry_array = array[i];
-		//TODO POSITION ARRAYS U STUPID BITCH
-		parg[i].numEntries = 4;
-	}
+	topicEntry *e11 = malloc(sizeof(topicEntry));
+        topicEntry *e12 = malloc(sizeof(topicEntry));
+        topicEntry *e13 = malloc(sizeof(topicEntry));
+        topicEntry *e14 = malloc(sizeof(topicEntry));
+        topicEntry *e15 = malloc(sizeof(topicEntry));
+
+	topicEntry *e21 = malloc(sizeof(topicEntry));
+        topicEntry *e22 = malloc(sizeof(topicEntry));
+        topicEntry *e23 = malloc(sizeof(topicEntry));
+        topicEntry *e24 = malloc(sizeof(topicEntry));
+        topicEntry *e25 = malloc(sizeof(topicEntry));
+
+	topicEntry *e31 = malloc(sizeof(topicEntry));
+        topicEntry *e32 = malloc(sizeof(topicEntry));
+        topicEntry *e33 = malloc(sizeof(topicEntry));
+        topicEntry *e34 = malloc(sizeof(topicEntry));
+        topicEntry *e35 = malloc(sizeof(topicEntry));
+
+	topicEntry *e41 = malloc(sizeof(topicEntry));
+        topicEntry *e42 = malloc(sizeof(topicEntry));
+        topicEntry *e43 = malloc(sizeof(topicEntry));
+        topicEntry *e44 = malloc(sizeof(topicEntry));
+        topicEntry *e45 = malloc(sizeof(topicEntry));
+
+        topicEntry *entry_array1[5] = {e11, e12, e13, e14, e15};
+        topicEntry *entry_array2[5] = {e21, e22, e23, e24, e25};
+        topicEntry *entry_array3[5] = {e31, e32, e33, e34, e35};
+        topicEntry *entry_array4[5] = {e41, e42, e43, e44, e45};
+	parg[0].entry_array = entry_array1;
+	parg[1].entry_array = entry_array2;
+	parg[2].entry_array = entry_array3;
+	parg[3].entry_array = entry_array4;
+	
+	parg[0].numEntries = 5;
+	parg[1].numEntries = 5;
+	parg[2].numEntries = 5;
+	parg[3].numEntries = 5;
+
 	proxyThread pool[NUMPROXIES / 2];
 	pthread_t thread[NUMPROXIES / 2];
 	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
 		init_proxypool(&pool[i]);
 		pthread_create(&thread[i],NULL,publisher,&parg[i]);
 	}
+	pthread_t cl;
+	pthread_create(&cl, NULL, cleanup, NULL);
+	sleep(1);
+	pthread_cond_broadcast(&cv);
+
 	//	b. Subscribers
-	//
-	
-
-
+	sub_args *sargs = malloc(sizeof(sub_args));
+	sargs->lastEntry = 0;
+	sargs->empty = malloc(sizeof(topicEntry));
+	sargs->pos = 0;
+	pthread_t s1;
+	pthread_create(&s1, NULL, subscriber, sargs);
+	pthread_join(s1, NULL);
+	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
+		pthread_join(thread[i], NULL);
+	}
+	pthread_join(cl,NULL);
 
 
 	/*
