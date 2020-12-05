@@ -15,12 +15,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "queue.c"
+#include "command.c"
 
 #define MAXNAME 25
 #define URLSIZE 100
 #define CAPSIZE 200
 #define NUMPROXIES 8
-#include "queue.c"
 
 /* ======================== Global Variables and Structs =================*/
 
@@ -52,6 +53,7 @@ int get_freeThread(proxyThread *pool)
 
 int main(int argc, char *argv[])
 {
+	/* BEGIN MULTI-THREADING 
 	//Cond Var and Cond Mut init
 	pthread_cond_init(&cv, NULL);
 	pthread_mutex_init(&cm, NULL);
@@ -114,30 +116,55 @@ int main(int argc, char *argv[])
 	parg[2].numEntries = 5;
 	parg[3].numEntries = 5;
 
-	proxyThread pool[NUMPROXIES / 2];
-	pthread_t thread[NUMPROXIES / 2];
+	proxyThread pub_pool[NUMPROXIES / 2];
+	pthread_t pub_thread[NUMPROXIES / 2];
 	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
-		init_proxypool(&pool[i]);
-		pthread_create(&thread[i],NULL,publisher,&parg[i]);
+		init_proxypool(&pub_pool[i]);
+		pthread_create(&pub_thread[i],NULL,publisher,&parg[i]);
+		pub_pool[i].flag = 1;
 	}
+	// Clean up Thread + CV broadcast
+	sleep(1);
+	pthread_cond_broadcast(&cv);
+	sleep(15);
+	pthread_t cl;
+	pthread_create(&cl, NULL, cleanup, NULL);
+	//	b. Subscribers
+	sub_args sarg[NUMPROXIES / 2];
+	sarg[0].lastEntry = 0;
+	sarg[0].empty = malloc(sizeof(topicEntry));
+	sarg[0].pos = 0;
+	sarg[1].lastEntry = 0;
+	sarg[1].empty = malloc(sizeof(topicEntry));
+	sarg[1].pos = 1;
+	sarg[2].lastEntry = 0;
+	sarg[2].empty = malloc(sizeof(topicEntry));
+	sarg[2].pos = 2;
+	sarg[3].lastEntry = 0;
+	sarg[3].empty = malloc(sizeof(topicEntry));
+	sarg[3].pos = 3;
+	proxyThread sub_pool[NUMPROXIES / 2];
+	pthread_t sub_thread[NUMPROXIES / 2];
+	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
+		init_proxypool(&sub_pool[i]);
+		pthread_create(&sub_thread[i],NULL,subscriber,&sarg[i]);
+		sub_pool[i].flag = 1;
+	}
+	// Clean up Thread + CV broadcast
 	pthread_t cl;
 	pthread_create(&cl, NULL, cleanup, NULL);
 	sleep(1);
 	pthread_cond_broadcast(&cv);
-
-	//	b. Subscribers
-	sub_args *sargs = malloc(sizeof(sub_args));
-	sargs->lastEntry = 0;
-	sargs->empty = malloc(sizeof(topicEntry));
-	sargs->pos = 0;
-	pthread_t s1;
-	pthread_create(&s1, NULL, subscriber, sargs);
-	pthread_join(s1, NULL);
+	//Thread Joining + Flag handling
 	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
-		pthread_join(thread[i], NULL);
+		pthread_join(pub_thread[i], NULL);
+		pthread_join(sub_thread[i], NULL);
+		pub_pool[i].flag = 0;
+		sub_pool[i].flag = 0;
+
 	}
 	pthread_join(cl,NULL);
-
+ 	END MULTI-THREADING */
 
 	/*
 	topicEntry *e1 = malloc(sizeof(topicEntry));

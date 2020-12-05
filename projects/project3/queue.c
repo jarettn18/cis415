@@ -16,8 +16,10 @@
 /* ================ Definitions and Global Variables ==============*/
 
 #define MAXENTRY 4
-#define DELTA 15
+//#define DELTA 15
 #define MAXQUEUES 4
+int DELTA = 15;
+int numQueues = 0;
 topicQueue registry[MAXQUEUES];
 pthread_cond_t cv;
 pthread_mutex_t cm;
@@ -40,10 +42,10 @@ void init_topicEntry(topicEntry *entry, int pubID)
 	entry->pubID = pubID;
 }
 
-void init_topicQueue(topicQueue *queue, char *name)
+void init_topicQueue(topicQueue *queue, char *name, int len)
 {
 	strcpy(queue->name, name);
-	queue->buffer = malloc(sizeof(topicEntry *) * MAXENTRY);
+	queue->buffer = malloc(sizeof(topicEntry *) * len);
 	queue->head = 0;
 	queue->tail = 0;
 	queue->length = 0;
@@ -88,13 +90,17 @@ void *publisher(void *args)
 			}
 		}
 	}
+	printf("TID %lu: Done\n",pthread_self());
 }
 
 void *subscriber(void *args)
 {
+	//pthread_cond_wait(&cv, &cm);
+	//pthread_mutex_unlock(&cm);
 	sub_args *sub_args = args;
-	while (1) {
-		int get_entry = getEntry(sub_args->lastEntry, sub_args->empty, sub_args->pos);
+	int get_entry = 1;
+	while (get_entry != 0) {
+		get_entry = getEntry(sub_args->lastEntry, sub_args->empty, sub_args->pos);
 		if (get_entry == 0) {
 			printf("Subscriber: Waiting for more entries\n");
 			sleep(3);
@@ -116,21 +122,23 @@ void *cleanup(void *args)
 {
 	//cleanup_args *cl_args = args;
 	struct timeval current_time;
-	int deq_succ = 1; 
-	while (1) {
-	for (int i = 0 ; i < MAXQUEUES ; i++) {
-		double total_elapsed = 0;
-		if (registry[i].length > 0 ) {
-			gettimeofday(&current_time,NULL);
-			double elapsed_sec = (current_time.tv_sec - registry[i].buffer[registry[i].tail]->timeStamp.tv_sec) * 1000;
-			double elapsed_usec = (current_time.tv_usec - registry[i].buffer[registry[i].tail]->timeStamp.tv_usec) / 1000;
-			total_elapsed = elapsed_sec + elapsed_usec;
+	int old_threads = 1; 
+	while (old_threads == 1) {
+		old_threads = 0;
+		for (int i = 0 ; i < MAXQUEUES ; i++) {
+			double total_elapsed = 0;
+			if (registry[i].length > 0 ) {
+				gettimeofday(&current_time,NULL);
+				double elapsed_sec = (current_time.tv_sec - registry[i].buffer[registry[i].tail]->timeStamp.tv_sec) * 1000;
+				double elapsed_usec = (current_time.tv_usec - registry[i].buffer[registry[i].tail]->timeStamp.tv_usec) / 1000;
+				total_elapsed = elapsed_sec + elapsed_usec;
+			}
+			if ((total_elapsed/1000) > DELTA) {
+				old_threads = 1;
+				printf("Queue %s: Oldest entry is %.2f sec\n",registry[i].name,total_elapsed/1000);
+				dequeue(&registry[i],NULL); //cl_args->empty);
+			}
 		}
-		if ((total_elapsed/1000) > DELTA) {
-			printf("Queue %s: Oldest entry is %.2f sec\n",registry[i].name,total_elapsed/1000);
-			dequeue(&registry[i],NULL); //cl_args->empty);
-		}
-	}
 	}
 }
 
