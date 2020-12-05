@@ -15,12 +15,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "queue.c"
-#include "command.c"
+#include "command.h"
+#include "queue.h"
+#include "string_parser.h"
 
-#define MAXNAME 25
-#define URLSIZE 100
-#define CAPSIZE 200
 #define NUMPROXIES 8
 
 /* ======================== Global Variables and Structs =================*/
@@ -53,7 +51,58 @@ int get_freeThread(proxyThread *pool)
 
 int main(int argc, char *argv[])
 {
-	/* BEGIN MULTI-THREADING 
+	if (argc != 2) {
+		fprintf(stderr,"Incorrect num of arguments\n");
+		exit(EXIT_FAILURE);
+	}
+	size_t bufsize = 100;
+	char *buffer = malloc(sizeof(char) * 100);
+	FILE *fp = freopen("input.txt", "r+", stdin);
+	int size;
+	command_line command;
+	while (size = getline(&buffer, &bufsize, stdin) >= 0)
+	{
+		printf("\nCOMMAND ARRAY\n");
+		command = str_filler(buffer, " \"");
+		for (int i = 0; command.command_list[i] != NULL; i++)
+		{
+			printf ("%s\n", command.command_list[i]);
+		}
+		if (strcmp(command.command_list[0], "create") == 0) {
+			printf("Create called\n");
+		}
+		else if (strcmp(command.command_list[0], "add") == 0) {
+			printf("add called\n");
+		}
+		else if (strcmp(command.command_list[0], "delta") == 0) {
+			printf("delta called\n");
+			printf("Delta: %d\n", DELTA);
+			delta(10);
+			printf("Delta: %d\n", DELTA);
+		}
+		else if (strcmp(command.command_list[0], "start") == 0) {
+			printf("start called\n");
+		}
+
+		free_command_line(&command);
+		memset(&command, 0, 0);
+	}
+
+	//Frees and close functions
+	fclose(fp);
+	free(buffer);
+
+
+
+
+
+
+
+
+
+
+
+/* BEGIN MULTi-THREADING
 	//Cond Var and Cond Mut init
 	pthread_cond_init(&cv, NULL);
 	pthread_mutex_init(&cm, NULL);
@@ -62,7 +111,7 @@ int main(int argc, char *argv[])
 		char str[8];
 		sprintf(str, "Test %d", i);
 		init_mutex(&registry[i]);
-		init_topicQueue(&registry[i], str);
+		init_topicQueue(&registry[i], str, MAXENTRY);
 	}
 	//Proxy Thread Pools
 	//	a. Publishers
@@ -126,7 +175,7 @@ int main(int argc, char *argv[])
 	// Clean up Thread + CV broadcast
 	sleep(1);
 	pthread_cond_broadcast(&cv);
-	sleep(15);
+	sleep(16);
 	pthread_t cl;
 	pthread_create(&cl, NULL, cleanup, NULL);
 	//	b. Subscribers
@@ -150,11 +199,12 @@ int main(int argc, char *argv[])
 		pthread_create(&sub_thread[i],NULL,subscriber,&sarg[i]);
 		sub_pool[i].flag = 1;
 	}
+
 	// Clean up Thread + CV broadcast
-	pthread_t cl;
-	pthread_create(&cl, NULL, cleanup, NULL);
-	sleep(1);
-	pthread_cond_broadcast(&cv);
+//	pthread_t cl;
+//	pthread_create(&cl, NULL, cleanup, NULL);
+//	sleep(1);
+//	pthread_cond_broadcast(&cv);
 	//Thread Joining + Flag handling
 	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
 		pthread_join(pub_thread[i], NULL);
@@ -164,9 +214,8 @@ int main(int argc, char *argv[])
 
 	}
 	pthread_join(cl,NULL);
- 	END MULTI-THREADING */
-
-	/*
+	END MULTI-THREADING */
+/*
 	topicEntry *e1 = malloc(sizeof(topicEntry));
         topicEntry *e2 = malloc(sizeof(topicEntry));
         topicEntry *e3 = malloc(sizeof(topicEntry));

@@ -8,13 +8,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "quacker.c"
-#include "queue.c"
-#include "string_parser.c"
-
+#include <unistd.h>
+#include <pthread.h>
+#include "command.h"
+#include "queue.h"
 /* ======================= Definitions and Global Variables ===============*/
 /* ======================= init/free + helper functions ===================*/
-/* ========================= Command Implementation ======================*/
+/* ====================== Pub/Sub Command Implementation =====================*/
+int put(int ID, char *URL, char *caption)
+{
+	return 1;
+}
+
+int get(int ID)
+{
+	return 1;
+}
+
+void *t_sleep(int ms)
+{
+
+	sleep((ms/1000));
+}
+
+void *stop()
+{
+	printf("Stopping program\n");
+}
+
+/* ========================= Command Line Implementation =====================*/
 int create_topic(int ID, char *name, int length)
 {
 	if (ID >= MAXQUEUES){
@@ -26,7 +48,7 @@ int create_topic(int ID, char *name, int length)
 		return 0;
 	}
 	else {
-		init_mutex(&registry[ID-1]->mutex);
+		init_mutex(&registry[ID-1]);
 		init_topicQueue(&registry[ID-1], name, length);
 		numQueues++;
 		return 1;
@@ -36,16 +58,20 @@ int create_topic(int ID, char *name, int length)
 void *query(char *type)
 {
 	for (int i = 0 ; i < numQueues ; i++) {
-		fprintf(stdout, "Topic Queue ID: %d || Length: %d\n",i,registry[i]->length);
+		fprintf(stdout, "Topic Queue ID: %d || Length: %d\n",i,registry[i].length);
 	}
 }
 
-int add_pub(void *cmd_file)
+int run_pub(char *cmd_file)
 {
+	printf("In run_pub. running cmd file\n");
+	return 1;
 }
 
-int add_sub(void *cmd_file)
+int run_sub(char *cmd_file)
 {
+	printf("In run_sub. running cmd file\n");
+	return 1;
 }
 
 int delta(int d)
@@ -56,4 +82,6 @@ int delta(int d)
 
 void *start()
 {
+	sleep(1);
+	pthread_cond_broadcast(&cv);
 }

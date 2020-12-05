@@ -14,16 +14,12 @@
 #include "queue.h"
 
 /* ================ Definitions and Global Variables ==============*/
-
-#define MAXENTRY 4
+//#define MAXENTRY 4
 //#define DELTA 15
-#define MAXQUEUES 4
+//#define MAXQUEUES 4
 int DELTA = 15;
 int numQueues = 0;
-topicQueue registry[MAXQUEUES];
-pthread_cond_t cv;
-pthread_mutex_t cm;
-
+//topicQueue registry[MAXQUEUES];
 
 /* ================= init/free and helper functions ===============*/
 void init_mutex(topicQueue *queue)
