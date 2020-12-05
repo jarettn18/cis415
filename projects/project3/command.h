@@ -10,8 +10,8 @@
 //Pseudo Commands
 int create_topic(int ID, char *name, int length);
 void *query();
-int add_pub(char *cmd_file);
-int add_sub(char *cmd_file);
+int run_pub(char *cmd_file, int ID);
+int run_sub(char *cmd_file, int ID);
 int delta(int d);
 void *start();
 //Pub/Sub Commands

@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include "command.h"
 #include "queue.h"
+#include "quacker.h"
 /* ======================= Definitions and Global Variables ===============*/
 /* ======================= init/free + helper functions ===================*/
 /* ====================== Pub/Sub Command Implementation =====================*/
@@ -62,15 +63,17 @@ void *query(char *type)
 	}
 }
 
-int run_pub(char *cmd_file)
+int run_pub(char *cmd_file, int ID)
 {
 	printf("In run_pub. running cmd file\n");
+	pub_pool[ID].flag = 0;
 	return 1;
 }
 
-int run_sub(char *cmd_file)
+int run_sub(char *cmd_file, int ID)
 {
 	printf("In run_sub. running cmd file\n");
+	sub_pool[ID].flag = 0;
 	return 1;
 }
 

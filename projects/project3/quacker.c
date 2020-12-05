@@ -15,25 +15,32 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "quacker.h"
 #include "command.h"
 #include "queue.h"
 #include "string_parser.h"
 
-#define NUMPROXIES 8
-
 /* ======================== Global Variables and Structs =================*/
-
+/*
 typedef struct {
 	int flag;
 	int TID;
 	pthread_t self;
 }proxyThread;
 
+//Proxy Thread Pool Inits
+//	Publishers
+proxyThread pub_pool[NUMPROXIES / 2];
+pthread_t pub_thread[NUMPROXIES / 2];
+//	Subscribers
+proxyThread sub_pool[NUMPROXIES / 2];
+pthread_t sub_thread[NUMPROXIES / 2];
+*/
 /* ======================== Init Functions ================================*/
-void init_proxypool(proxyThread *proxy) 
+void init_proxypool(proxyThread *proxy, int ID) 
 {
+	proxy->TID = ID;
 	proxy->flag = 0;
-	proxy->TID = pthread_self();
 }
 
 /* ========================= Helper Functions ============================*/
@@ -47,6 +54,13 @@ int get_freeThread(proxyThread *pool)
 	return -1;
 }
 
+void display_pool(proxyThread *pool)
+{
+	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
+		printf("T%d: %d\t",pool[i].TID, pool[i].flag);
+	}
+}
+
 /* ========================= Main Function ================================*/
 
 int main(int argc, char *argv[])
@@ -55,38 +69,85 @@ int main(int argc, char *argv[])
 		fprintf(stderr,"Incorrect num of arguments\n");
 		exit(EXIT_FAILURE);
 	}
+
+	//Cond Var and Cond Mut init
+	pthread_cond_init(&cv, NULL);
+	pthread_mutex_init(&cm, NULL);
+
+	//	INIT
+	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
+		init_proxypool(&pub_pool[i], i);
+		init_proxypool(&sub_pool[i], i);
+	}
+
+	//Begin Processing Commands
 	size_t bufsize = 100;
 	char *buffer = malloc(sizeof(char) * 100);
 	FILE *fp = freopen("input.txt", "r+", stdin);
 	int size;
 	command_line command;
+
 	while (size = getline(&buffer, &bufsize, stdin) >= 0)
 	{
-		printf("\nCOMMAND ARRAY\n");
 		command = str_filler(buffer, " \"");
+		/*
 		for (int i = 0; command.command_list[i] != NULL; i++)
 		{
 			printf ("%s\n", command.command_list[i]);
 		}
+		*/
 		if (strcmp(command.command_list[0], "create") == 0) {
-			printf("Create called\n");
+			if (strcmp(command.command_list[1], "topic") == 0) {
+				int ID = atoi(command.command_list[2]);
+				char *name = command.command_list[3];
+				int len = atoi(command.command_list[4]);
+				create_topic(ID, name, len);
+			}
+			else {
+				fprintf(stderr, "Error: Unable to create entity %s\n", command.command_list[1]);
+			}
 		}
 		else if (strcmp(command.command_list[0], "add") == 0) {
-			printf("add called\n");
+			if (strcmp(command.command_list[1], "publisher") == 0) {
+				int free_t = get_freeThread(pub_pool);
+				while (free_t == -1) {
+					sched_yield();
+					free_t = get_freeThread(pub_pool);
+				}
+				pub_pool[free_t].flag = 1;
+				char *cmdfile = command.command_list[2];
+				run_pub(cmdfile, free_t);
+			}
+			else if (strcmp(command.command_list[1], "subscriber") == 0) {
+				int free_t = get_freeThread(sub_pool);
+				while (free_t == -1) {
+					sched_yield();
+					free_t = get_freeThread(sub_pool);
+				}
+				sub_pool[free_t].flag = 1;
+				char *cmdfile = command.command_list[2];
+				run_sub(cmdfile, free_t);
+			}
+			else {
+				fprintf(stderr, "Error: Unable to add entity %s\n",command.command_list[1]);
+			}
 		}
 		else if (strcmp(command.command_list[0], "delta") == 0) {
-			printf("delta called\n");
-			printf("Delta: %d\n", DELTA);
-			delta(10);
-			printf("Delta: %d\n", DELTA);
+			int d = atoi(command.command_list[1]);
+			delta(d);
 		}
 		else if (strcmp(command.command_list[0], "start") == 0) {
 			printf("start called\n");
+			//TODO
 		}
 
 		free_command_line(&command);
 		memset(&command, 0, 0);
 	}
+
+	display_Q(&registry[0]);
+	display_Q(&registry[1]);
+	display_Q(&registry[2]);
 
 	//Frees and close functions
 	fclose(fp);

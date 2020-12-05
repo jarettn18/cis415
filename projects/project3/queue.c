@@ -52,7 +52,7 @@ void display_Q(topicQueue *queue)
 {
 	if (queue->length == 0) {
 		printf("QUEUE: %s\n",queue->name);
-		printf("QUEUE is empty\n");
+		printf("\tQUEUE is empty\n");
 	}
 	else {
 		printf("QUEUE: %s\n",queue->name);

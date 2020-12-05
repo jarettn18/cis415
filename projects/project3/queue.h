@@ -62,6 +62,7 @@ typedef struct
 void init_mutex(topicQueue *queue);
 void init_topicEntry(topicEntry *entry, int pubID);
 void init_topicQueue(topicQueue *queue, char *name, int len);
+void display_Q(topicQueue *queue);
 int enqueue(int pos, topicEntry *entry);
 int dequeue(topicQueue *queue, topicEntry *empty);
 int getEntry(int lastEntry, topicEntry *empty, int pos);
