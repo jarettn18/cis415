@@ -14,6 +14,7 @@
 #include "queue.h"
 #include "quacker.h"
 /* ======================= Definitions and Global Variables ===============*/
+int cl_running = 0;
 /* ======================= init/free + helper functions ===================*/
 /* ====================== Pub/Sub Command Implementation =====================*/
 int put(int ID, char *URL, char *caption)
@@ -65,25 +66,13 @@ void *query(char *type)
 
 int run_pub(char *cmd_file, int ID)
 {
+	pub_args *parg = malloc(sizeof(pub_args));
+	strcpy(parg->file, cmd_file);
 	printf("In run_pub. running cmd file\n");
-	pub_args *parg;
-
-	char *p_buf = malloc(sizeof(char) * 50);;
-	size_t p_bufsize = 50;
-        int size;
-	printf("cmd_file = %s\n",cmd_file);
-	FILE *pub_fp = fopen(cmd_file, "r");
-	if (pub_fp == NULL) {
-		printf("File %s is not valid\n", cmd_file);
-		free(p_buf);
-		return 0;
-	}
-	while (size = getline(&p_buf, &p_bufsize, pub_fp) >= 0)
-	{
-		printf("%s",p_buf);
-	}
-	
-	pub_pool[ID].flag = 0;
+	parg->TID = ID;
+	pthread_create(&pub_thread[ID], NULL, publisher, parg);
+	//pthread_join(pub_thread[ID], NULL);
+	free(parg);
 	return 1;
 }
 
@@ -102,6 +91,19 @@ int delta(int d)
 
 void *start()
 {
+	printf("START CALLED\n");
 	sleep(1);
 	pthread_cond_broadcast(&cv);
+	//TODO FIX DELTA
+	if (cl_running == 0) {
+		printf("CLEANUP THREAD LAUNCHED\n");
+        	pthread_create(&cl, NULL, cleanup, NULL);
+		cl_running = 1;
+	}
+        //pthread_cond_broadcast(&cv);
+       	pthread_join(pub_thread[0], NULL);
+        pthread_join(pub_thread[1], NULL);
+        pthread_join(pub_thread[2], NULL);
+        pthread_join(pub_thread[3], NULL);
+	pthread_join(cl, NULL);
 }

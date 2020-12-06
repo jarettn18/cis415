@@ -29,5 +29,6 @@ pthread_t pub_thread[NUMPROXIES / 2];
 //      Subscribers
 proxyThread sub_pool[NUMPROXIES / 2];
 pthread_t sub_thread[NUMPROXIES / 2];
+pthread_t cl;
 
 #endif

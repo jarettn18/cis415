@@ -12,12 +12,15 @@
 #include <pthread.h>
 #include <sys/time.h>
 #include "queue.h"
+#include "quacker.h"
+#include "command.h"
+#include "string_parser.h"
 
 /* ================ Definitions and Global Variables ==============*/
 //#define MAXENTRY 4
 //#define DELTA 15
 //#define MAXQUEUES 4
-int DELTA = 15;
+double DELTA = 10;
 int numQueues = 0;
 //topicQueue registry[MAXQUEUES];
 
@@ -46,6 +49,7 @@ void init_topicQueue(topicQueue *queue, char *name, int len)
 	queue->tail = 0;
 	queue->length = 0;
 	queue->count = 0;
+	queue->MAXLENGTH = len;
 }
 
 void display_Q(topicQueue *queue)
@@ -56,15 +60,29 @@ void display_Q(topicQueue *queue)
 	}
 	else {
 		printf("QUEUE: %s\n",queue->name);
-		for (int i = 0 ; i < MAXENTRY ; i++) {
+		for (int i = 0 ; i < queue->length ; i++) {
 			printf("\tTicket %d: %d\n",queue->buffer[i]->entryNum,queue->buffer[i]->pubID);
 		}
 		printf(" TAIL: %d HEAD: %d LENGTH: %d\n",queue->tail, queue->head, queue->length);
 	}
 }
 
+int all_empty()
+{
+	int empty = 1;
+	for (int i = 0 ; i < numQueues ; i++) {
+		if (registry[i].length > 0) {
+			empty = 0;
+		}
+	}
+	return empty;
+}
+
 void destroy(topicQueue *queue)
 {
+	for (int i = 0 ; i < queue->MAXLENGTH ; i++) {
+		free(queue->buffer[i]);
+	}
 	free(queue->buffer);
 }
 
@@ -74,7 +92,64 @@ void *publisher(void *args)
 {
 	pthread_cond_wait(&cv, &cm);
 	pthread_mutex_unlock(&cm);
+
 	pub_args *pub_args = args;
+
+ 	char *p_buf = malloc(sizeof(char) * 50);;
+	char *sp = p_buf;
+        size_t p_bufsize = 50;
+        int size;
+        FILE *pub_fp = fopen(pub_args->file, "r");
+        command_line p_cmd;
+        if (pub_fp == NULL) {
+                printf("TID %d: File %s is not valid\n",pub_args->TID, pub_args->file);
+		free_command_line(&p_cmd);
+		memset(&p_cmd, 0, 0);
+                free(sp);
+        }
+	else{
+		while (size = getline(&p_buf, &p_bufsize, pub_fp) >= 0)
+		{
+			int stop = strncmp(p_buf, "stop", 4);
+			if (stop == 0) {
+				printf("TID %d: Stop Read! Exiting\n",pub_args->TID);
+				pub_pool[pub_args->TID].flag = 0;
+				free(sp);
+				fclose(pub_fp);
+				pthread_exit(0);
+				free_command_line(&p_cmd);
+				memset(&p_cmd, 0, 0);
+				break;
+			}
+			//printf("%s",p_buf);
+			p_cmd = str_filler(p_buf, " ");
+			if (strcmp(p_cmd.command_list[0], "put") == 0)
+			{	
+				fprintf(stdout,"TID %d: pushing\n",pub_args->TID);
+				topicEntry *entry = malloc(sizeof(topicEntry));
+				entry->pubID = pub_args->TID;
+				entry->entryNum = 0;
+				strcpy(entry->photoURL, p_cmd.command_list[2]);
+				strcpy(entry->photoCaption, p_cmd.command_list[3]);
+				int enq_succ = enqueue(atoi(p_cmd.command_list[1]) - 1, entry);
+				if (enq_succ == 0) {
+					printf("Queue full: Yielding\n");
+					while (enq_succ == 0) {
+						sched_yield();
+						enq_succ = enqueue(atoi(p_cmd.command_list[1]) - 1, entry);
+					}
+				}
+			}
+			else if (strcmp(p_cmd.command_list[0], "sleep") == 0)
+			{
+				t_sleep(atoi(p_cmd.command_list[1]));
+			}
+			else {
+				printf("Command %s not found\n",p_cmd.command_list[0]);
+			}
+		}
+	}
+	/*
 	for (int i = 0 ; i < pub_args->numEntries ; i++) {
 		fprintf(stdout,"\nTID %lu: pushing\n",pthread_self());
 		int enq_success = enqueue(pub_args->pos_array[i], pub_args->entry_array[i]);
@@ -87,6 +162,7 @@ void *publisher(void *args)
 		}
 	}
 	printf("TID %lu: Done\n",pthread_self());
+	*/
 }
 
 void *subscriber(void *args)
@@ -118,11 +194,12 @@ void *cleanup(void *args)
 {
 	//cleanup_args *cl_args = args;
 	struct timeval current_time;
-	while(1) {
-	int old_threads = 1; 
+	int empty = 0;
+        while(empty != 1) {
+	int old_threads = 1;
 	while (old_threads == 1) {
 		old_threads = 0;
-		for (int i = 0 ; i < MAXQUEUES ; i++) {
+		for (int i = 0 ; i < numQueues ; i++) {
 			double total_elapsed = 0;
 			if (registry[i].length > 0 ) {
 				gettimeofday(&current_time,NULL);
@@ -132,12 +209,15 @@ void *cleanup(void *args)
 			}
 			if ((total_elapsed/1000) > DELTA) {
 				old_threads = 1;
-				printf("Queue %s: Oldest entry is %.2f sec\n",registry[i].name,total_elapsed/1000);
+				printf("Queue %s: Oldest entry %d is %.2f sec\n",registry[i].name,registry[i].buffer[registry[i].tail]->entryNum,total_elapsed/1000);
 				dequeue(&registry[i],NULL); //cl_args->empty);
 			}
 		}
 	}
+	empty = all_empty();
 	}
+	printf("EXITING CLEAN UP THREAD\n");
+	pthread_exit(0);
 }
 
 /* ====================== Main Functions ===================== */
@@ -146,7 +226,7 @@ int enqueue(int pos, topicEntry *entry)
 {
 	int aquire = pthread_mutex_lock(&registry[pos].mutex);
 	
-	if (registry[pos].length == MAXENTRY) 
+	if (registry[pos].length == registry[pos].MAXLENGTH) 
 	{
 		//fprintf(stderr, "Error: Queue %s is full\n",queue->name);
 		pthread_mutex_unlock(&registry[pos].mutex);
@@ -160,7 +240,7 @@ int enqueue(int pos, topicEntry *entry)
 		entry->entryNum = registry[pos].count;
 		gettimeofday(&entry->timeStamp, NULL);
 		registry[pos].head++;
-		if (registry[pos].head == MAXENTRY) {
+		if (registry[pos].head == registry[pos].MAXLENGTH) {
 			registry[pos].head = 0;
 		}
 		pthread_mutex_unlock(&registry[pos].mutex);
@@ -187,7 +267,7 @@ int dequeue(topicQueue *queue, topicEntry *empty)
 		queue->buffer[queue->tail]->pubID = 0;
 		queue->buffer[queue->tail]->entryNum = -1;
 		queue->tail++;
-		if (queue->tail == MAXENTRY)
+		if (queue->tail == queue->MAXLENGTH)
 		{
 			queue->tail = 0;
 		}
@@ -216,8 +296,8 @@ int getEntry(int lastEntry, topicEntry *empty, int pos)
 	//Case 2 last entry + 1 in queue
 	for (int i = 0 ; i < registry[pos].length ; i++) {
 		int current_i = registry[pos].tail + i;
-		if (current_i >= MAXENTRY) {
-			current_i = current_i - MAXENTRY;
+		if (current_i >= registry[pos].MAXLENGTH) {
+			current_i = current_i - registry[pos].MAXLENGTH;
 		}
 		if (registry[pos].buffer[current_i]->entryNum == lastEntry + 1) {
 			empty->entryNum = registry[pos].buffer[current_i]->entryNum;

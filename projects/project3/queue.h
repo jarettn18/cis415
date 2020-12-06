@@ -13,7 +13,7 @@
 #define MAXNAME 25
 #define MAXENTRY 10
 #define MAXQUEUES 4
-int DELTA;
+double DELTA;
 int numQueues;
 pthread_cond_t cv;
 pthread_mutex_t cm;
@@ -24,7 +24,7 @@ typedef struct
 	struct timeval timeStamp;
 	int pubID;
 	char photoURL[URLSIZE];
-	char *photoCaption[CAPSIZE];
+	char photoCaption[CAPSIZE];
 }topicEntry;
 
 typedef struct 
@@ -35,15 +35,16 @@ typedef struct
 	int tail;
 	int length;
 	int count;
+	int MAXLENGTH;
 	pthread_mutex_t mutex;
 }topicQueue;
 
 typedef struct
 {
-	topicEntry **entry_array;
-	int pos_array[MAXENTRY];
+	topicEntry *entry;
+	int pos;
+	char file[MAXNAME];
 	int TID;
-	int numEntries;
 }pub_args;
 
 typedef struct
@@ -63,6 +64,7 @@ void init_mutex(topicQueue *queue);
 void init_topicEntry(topicEntry *entry, int pubID);
 void init_topicQueue(topicQueue *queue, char *name, int len);
 void display_Q(topicQueue *queue);
+void destroy(topicQueue *queue);
 int enqueue(int pos, topicEntry *entry);
 int dequeue(topicQueue *queue, topicEntry *empty);
 int getEntry(int lastEntry, topicEntry *empty, int pos);

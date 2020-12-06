@@ -110,11 +110,16 @@ int main(int argc, char *argv[])
 		else if (strcmp(command.command_list[0], "add") == 0) {
 			if (strcmp(command.command_list[1], "publisher") == 0) {
 				int free_t = get_freeThread(pub_pool);
-				while (free_t == -1) {
-					sched_yield();
-					free_t = get_freeThread(pub_pool);
+				if (free_t == -1 ) {
+					start();
+					printf("No free threads. Yielding\n");
+					while (free_t == -1) {
+						sched_yield();
+						free_t = get_freeThread(pub_pool);
+					}
 				}
 				pub_pool[free_t].flag = 1;
+				printf("Adding Pub: %d\n",free_t);
 				char *cmdfile = command.command_list[2];
 				run_pub(cmdfile, free_t);
 			}
@@ -138,10 +143,7 @@ int main(int argc, char *argv[])
 		}
 		else if (strcmp(command.command_list[0], "start") == 0) {
 			printf("start called\n");
-			pthread_t cl;
-			pthread_create(&cl, NULL, cleanup, NULL);
-			pthread_cond_broadcast(&cv);
-			pthread_join(cl, NULL);
+			start();
 		}
 
 		free_command_line(&command);
@@ -154,7 +156,9 @@ int main(int argc, char *argv[])
 
 	//Frees and close functions
 	fclose(fp);
-	free(buffer);
+	for (int i = 0 ; i < numQueues ; i++) {
+		destroy(&registry[i]);
+	}
 
 
 
