@@ -66,6 +66,23 @@ void *query(char *type)
 int run_pub(char *cmd_file, int ID)
 {
 	printf("In run_pub. running cmd file\n");
+	pub_args *parg;
+
+	char *p_buf = malloc(sizeof(char) * 50);;
+	size_t p_bufsize = 50;
+        int size;
+	printf("cmd_file = %s\n",cmd_file);
+	FILE *pub_fp = fopen(cmd_file, "r");
+	if (pub_fp == NULL) {
+		printf("File %s is not valid\n", cmd_file);
+		free(p_buf);
+		return 0;
+	}
+	while (size = getline(&p_buf, &p_bufsize, pub_fp) >= 0)
+	{
+		printf("%s",p_buf);
+	}
+	
 	pub_pool[ID].flag = 0;
 	return 1;
 }

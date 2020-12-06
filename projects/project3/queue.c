@@ -118,6 +118,7 @@ void *cleanup(void *args)
 {
 	//cleanup_args *cl_args = args;
 	struct timeval current_time;
+	while(1) {
 	int old_threads = 1; 
 	while (old_threads == 1) {
 		old_threads = 0;
@@ -135,6 +136,7 @@ void *cleanup(void *args)
 				dequeue(&registry[i],NULL); //cl_args->empty);
 			}
 		}
+	}
 	}
 }
 

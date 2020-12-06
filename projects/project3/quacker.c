@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 	pthread_cond_init(&cv, NULL);
 	pthread_mutex_init(&cm, NULL);
 
-	//	INIT
+	// Proxy pool INIT
 	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
 		init_proxypool(&pub_pool[i], i);
 		init_proxypool(&sub_pool[i], i);
@@ -138,7 +138,10 @@ int main(int argc, char *argv[])
 		}
 		else if (strcmp(command.command_list[0], "start") == 0) {
 			printf("start called\n");
-			//TODO
+			pthread_t cl;
+			pthread_create(&cl, NULL, cleanup, NULL);
+			pthread_cond_broadcast(&cv);
+			pthread_join(cl, NULL);
 		}
 
 		free_command_line(&command);
