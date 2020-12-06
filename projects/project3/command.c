@@ -68,18 +68,17 @@ int run_pub(char *cmd_file, int ID)
 {
 	pub_args *parg = malloc(sizeof(pub_args));
 	strcpy(parg->file, cmd_file);
-	printf("In run_pub. running cmd file\n");
-	parg->TID = ID;
+	parg->TID = ID + 1;
 	pthread_create(&pub_thread[ID], NULL, publisher, parg);
-	//pthread_join(pub_thread[ID], NULL);
-	free(parg);
 	return 1;
 }
 
 int run_sub(char *cmd_file, int ID)
 {
-	printf("In run_sub. running cmd file\n");
-	sub_pool[ID].flag = 0;
+	sub_args *sarg = malloc(sizeof(sub_args));
+	strcpy(sarg->file, cmd_file);
+	sarg->TID = ID + 1;
+	pthread_create(&sub_thread[ID], NULL, subscriber, sarg);
 	return 1;
 }
 
@@ -91,19 +90,15 @@ int delta(int d)
 
 void *start()
 {
-	printf("START CALLED\n");
 	sleep(1);
 	pthread_cond_broadcast(&cv);
-	//TODO FIX DELTA
 	if (cl_running == 0) {
-		printf("CLEANUP THREAD LAUNCHED\n");
         	pthread_create(&cl, NULL, cleanup, NULL);
 		cl_running = 1;
 	}
         //pthread_cond_broadcast(&cv);
-       	pthread_join(pub_thread[0], NULL);
-        pthread_join(pub_thread[1], NULL);
-        pthread_join(pub_thread[2], NULL);
-        pthread_join(pub_thread[3], NULL);
-	pthread_join(cl, NULL);
+	for (int i = 0 ; i < NUMPROXIES / 2 ; i++) {
+		pthread_join(pub_thread[i],NULL);
+		pthread_join(sub_thread[i],NULL);
+	}
 }

@@ -42,16 +42,17 @@ typedef struct
 typedef struct
 {
 	topicEntry *entry;
-	int pos;
 	char file[MAXNAME];
+	int pos;
 	int TID;
 }pub_args;
 
 typedef struct
 {	
-	int lastEntry;
 	topicEntry *empty;
-	int pos;
+	char file[MAXNAME];
+	int lastEntry;
+	int TID;
 }sub_args;
 
 typedef struct

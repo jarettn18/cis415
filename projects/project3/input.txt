@@ -4,5 +4,5 @@ create topic 3 "goats" 6
 delta 5
 add publisher "pub1.txt"
 add publisher "pub2.txt"
-add publisher "pub3.txt"
+add subscriber "sub1.txt"
 start

@@ -90,12 +90,6 @@ int main(int argc, char *argv[])
 	while (size = getline(&buffer, &bufsize, stdin) >= 0)
 	{
 		command = str_filler(buffer, " \"");
-		/*
-		for (int i = 0; command.command_list[i] != NULL; i++)
-		{
-			printf ("%s\n", command.command_list[i]);
-		}
-		*/
 		if (strcmp(command.command_list[0], "create") == 0) {
 			if (strcmp(command.command_list[1], "topic") == 0) {
 				int ID = atoi(command.command_list[2]);
@@ -112,26 +106,27 @@ int main(int argc, char *argv[])
 				int free_t = get_freeThread(pub_pool);
 				if (free_t == -1 ) {
 					start();
-					printf("No free threads. Yielding\n");
 					while (free_t == -1) {
 						sched_yield();
 						free_t = get_freeThread(pub_pool);
 					}
 				}
 				pub_pool[free_t].flag = 1;
-				printf("Adding Pub: %d\n",free_t);
-				char *cmdfile = command.command_list[2];
-				run_pub(cmdfile, free_t);
+				printf("Adding Pub: %d\n",free_t + 1);
+				run_pub(command.command_list[2], free_t);
 			}
 			else if (strcmp(command.command_list[1], "subscriber") == 0) {
 				int free_t = get_freeThread(sub_pool);
 				while (free_t == -1) {
-					sched_yield();
-					free_t = get_freeThread(sub_pool);
+					start();
+					while (free_t == -1) {
+						sched_yield();
+						free_t = get_freeThread(sub_pool);
+					}
 				}
 				sub_pool[free_t].flag = 1;
-				char *cmdfile = command.command_list[2];
-				run_sub(cmdfile, free_t);
+				printf("Adding Sub: %d\n",free_t + 1);
+				run_sub(command.command_list[2], free_t);
 			}
 			else {
 				fprintf(stderr, "Error: Unable to add entity %s\n",command.command_list[1]);
@@ -142,23 +137,21 @@ int main(int argc, char *argv[])
 			delta(d);
 		}
 		else if (strcmp(command.command_list[0], "start") == 0) {
-			printf("start called\n");
 			start();
 		}
-
-		free_command_line(&command);
-		memset(&command, 0, 0);
 	}
 
+	//Frees and close functions and Clean up Join
+	pthread_join(cl,NULL);
 	display_Q(&registry[0]);
 	display_Q(&registry[1]);
 	display_Q(&registry[2]);
-
-	//Frees and close functions
 	fclose(fp);
 	for (int i = 0 ; i < numQueues ; i++) {
 		destroy(&registry[i]);
 	}
+	free_command_line(&command);
+	memset(&command, 0, 0);
 
 
 
