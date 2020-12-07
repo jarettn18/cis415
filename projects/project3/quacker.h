@@ -21,7 +21,7 @@ int get_freeThread(proxyThread *pool);
 void display_pool(proxyThread *pool);
 
 /* ======================= Global Variables ===============*/
-#define NUMPROXIES 8
+#define NUMPROXIES 16
 //Proxy Thread Pool Inits
 //      Publishers
 proxyThread pub_pool[NUMPROXIES / 2];

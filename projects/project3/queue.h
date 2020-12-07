@@ -11,8 +11,8 @@
 #define URLSIZE 100
 #define CAPSIZE 250
 #define MAXNAME 25
-#define MAXENTRY 10
-#define MAXQUEUES 4
+#define MAXENTRY 15
+#define MAXQUEUES 6
 double DELTA;
 int numQueues;
 pthread_cond_t cv;
