@@ -103,7 +103,7 @@ void *publisher(void *args)
         FILE *pub_fp = fopen(pub_args->file, "r");
         command_line p_cmd;
         if (pub_fp == NULL) {
-                printf("TID %d: File %s is not valid\n",pub_args->TID, pub_args->file);
+                printf("Proxy thread %d - type Publisher - File %s is not valid\n",pub_args->TID, pub_args->file);
 		pub_pool[pub_args->TID - 1].flag = 0;
 		free(sp);
 		free_command_line(&p_cmd);
@@ -115,7 +115,7 @@ void *publisher(void *args)
 		{
 			int stop = strncmp(p_buf, "stop", 4);
 			if (stop == 0) {
-				printf("PUBLISHER TID %d: Stop Read! Exiting\n",pub_args->TID);
+				printf("Proxy thread %d - type Publisher - Executed command: Stop \n",pub_args->TID);
 				pub_pool[pub_args->TID - 1].flag = 0;
 				free(sp);
 				fclose(pub_fp);
@@ -127,7 +127,7 @@ void *publisher(void *args)
 			p_cmd = str_filler(p_buf, " ");
 			if (strcmp(p_cmd.command_list[0], "put") == 0)
 			{	
-				fprintf(stdout,"PUBLISHER TID %d: pushing\n",pub_args->TID);
+				fprintf(stdout,"Proxy thread %d - type Publisher - Executed command: Put\n",pub_args->TID);
 				topicEntry *entry = malloc(sizeof(topicEntry));
 				entry->pubID = pub_args->TID;
 				entry->entryNum = 0;
@@ -135,7 +135,7 @@ void *publisher(void *args)
 				strcpy(entry->photoCaption, p_cmd.command_list[3]);
 				int enq_succ = enqueue(atoi(p_cmd.command_list[1]) - 1, entry);
 				if (enq_succ == 0) {
-					printf("PUBLISHER ID %d: Queue full. Yielding\n",pub_args->TID);
+					printf("Proxy thread %d - type Publisher - Queue full. Yielding\n",pub_args->TID);
 					while (enq_succ == 0) {
 						sched_yield();
 						enq_succ = enqueue(atoi(p_cmd.command_list[1]) - 1, entry);
@@ -144,27 +144,14 @@ void *publisher(void *args)
 			}
 			else if (strcmp(p_cmd.command_list[0], "sleep") == 0)
 			{
+				printf("Proxy thread %d - type Publisher - Exectued command: Sleep\n",pub_args->TID);
 				t_sleep(atoi(p_cmd.command_list[1]));
 			}
 			else {
-				printf("Command %s not found\n",p_cmd.command_list[0]);
+				printf("Proxy thread %d - type Publisher - Command %s not found\n",pub_args->TID,p_cmd.command_list[0]);
 			}
 		}
 	}
-	/*
-	for (int i = 0 ; i < pub_args->numEntries ; i++) {
-		fprintf(stdout,"\nTID %lu: pushing\n",pthread_self());
-		int enq_success = enqueue(pub_args->pos_array[i], pub_args->entry_array[i]);
-		if (enq_success == 0) {
-			printf("Queue full: Yielding\n");
-			while (enq_success == 0) {
-				sched_yield();
-				enq_success = enqueue(pub_args->pos_array[i],pub_args->entry_array[i]);
-			}
-		}
-	}
-	printf("TID %lu: Done\n",pthread_self());
-	*/
 }
 
 void *subscriber(void *args)
@@ -187,7 +174,7 @@ void *subscriber(void *args)
         FILE *sub_fp = fopen(sub_args->file, "r");
         command_line s_cmd;
         if (sub_fp == NULL) {
-                printf("TID %d: File %s is not valid\n",sub_args->TID, sub_args->file);
+                printf("Proxy thread %d - type Subscriber - File %s is not valid\n",sub_args->TID, sub_args->file);
 		sub_pool[sub_args->TID - 1].flag = 0;
 		free(sp);
 		free(empty);
@@ -198,9 +185,10 @@ void *subscriber(void *args)
 	else{
 		while (size = getline(&s_buf, &s_bufsize, sub_fp) >= 0)
 		{
-			int stop = strncmp(s_buf, "stop", 4);
+			s_cmd = str_filler(s_buf, " ");
+			int stop = strncmp(s_cmd.command_list[0], "stop", 4);
 			if (stop == 0) {
-				printf("SUBSCRIBER TID %d: Stop Read! Exiting\n",sub_args->TID);
+				printf("Proxy thread %d - type Subscriber - Executed command: Stop\n",sub_args->TID);
 				sub_pool[sub_args->TID - 1].flag = 0;
 				free(sp);
 				free(empty);
@@ -210,18 +198,14 @@ void *subscriber(void *args)
 				memset(&s_cmd, 0, 0);
 				break;
 			}
-			//printf("%s",p_buf);
-			s_cmd = str_filler(s_buf, " ");
 			if (strcmp(s_cmd.command_list[0], "get") == 0)
 			{
-				//TODO Seg fault caused by reading multiple q indexes
+				printf("Proxy thread %d - type Subscriber - Executed command: Get\n",sub_args->TID);
 				int q_index = atoi(s_cmd.command_list[1]);
-				printf("Attempting to read Topic %d\n",q_index);
-				if (q_index >= numQueues) {
-					fprintf(stderr,"Topic %d is not valid\n",q_index);
+				if (q_index > numQueues) {
+					fprintf(stderr,"Proxy thread %d - type Subscriber - Topic %d is not valid\n", sub_args->TID,q_index);
 				}
 				else {
-					printf("Attempting to read Topic %d\n",q_index);
 					int get_entry = 1;
 					while (get_entry != 0) {
 						get_entry = getEntry(get_entrylist[q_index-1], empty, q_index - 1);
@@ -241,35 +225,16 @@ void *subscriber(void *args)
 			}	
 			else if (strcmp(s_cmd.command_list[0], "sleep") == 0)
 			{
-				t_sleep(atoi(s_cmd.command_list[1])*10);
+				printf("Proxy thread %d - type: Subscriber - Executed command: Sleep\n",sub_args->TID);
+				t_sleep(atoi(s_cmd.command_list[1]));
 			}
 			else {
-				printf("Command %s not found\n",s_cmd.command_list[0]);
+				printf("Proxy thread %d - type: Subscriber: Command %s not found\n",sub_args->TID,s_cmd.command_list[0]);
 			}
+			free_command_line (&s_cmd);
+			memset (&s_cmd, 0, 0);
 		}
 	}
-
-
-	/*
-	int get_entry = 1;
-	while (get_entry != 0) {
-		get_entry = getEntry(sub_args->lastEntry, sub_args->empty, sub_args->pos);
-		if (get_entry == 0) {
-			printf("Subscriber: Waiting for more entries\n");
-			sleep(3);
-		}
-		else if (get_entry == 1){
-			printf("TID %lu: Read Entry %d\n",pthread_self(), sub_args->empty->entryNum);
-			sub_args->lastEntry++;
-			sleep(1);
-		}
-		else {
-			printf("TID %lu: Read Entry %d\n",pthread_self(), sub_args->empty->entryNum);
-			sub_args->lastEntry = get_entry;
-			sleep(1);
-		}
-	}
-	*/
 }
 
 void *cleanup(void *args)
@@ -291,7 +256,7 @@ void *cleanup(void *args)
 			}
 			if ((total_elapsed/1000) > DELTA) {
 				old_threads = 1;
-				printf("CLEAN UP THREAD: Queue %s: Entry %d is %.2f sec old. Dequeueing\n",registry[i].name,registry[i].buffer[registry[i].tail]->entryNum,total_elapsed/1000);
+				printf("Clean Up Thread: Queue %s: Entry %d is %.2f sec old. Dequeueing\n",registry[i].name,registry[i].buffer[registry[i].tail]->entryNum,total_elapsed/1000);
 				dequeue(&registry[i],NULL); //cl_args->empty);
 			}
 		}

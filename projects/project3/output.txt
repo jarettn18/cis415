@@ -1,0 +1,171 @@
+Adding Pub: 1
+Adding Pub: 2
+Adding Pub: 3
+Adding Sub: 1
+Adding Sub: 2
+Adding Sub: 3
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Publisher - Executed command: Put
+Pushing entry 1 to queue goats
+Proxy thread 3 - type Publisher - Exectued command: Sleep
+Proxy thread 2 - type Publisher - Executed command: Put
+Pushing entry 1 to queue Funny_dogs
+Proxy thread 2 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 1 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 1: Read Entry 1 from topic 1
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 1: Read Entry 1 from topic 2
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type Subscriber - Executed command: Stop
+Proxy thread 2 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 2: Read Entry 1 from topic 2
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Publisher - Executed command: Put
+Pushing entry 2 to queue Funny_dogs
+Proxy thread 2 - type Publisher - Exectued command: Sleep
+Proxy thread 2 - type Publisher - Executed command: Put
+Pushing entry 3 to queue Funny_dogs
+Proxy thread 2 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 2 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 2: Read Entry 2 from topic 2
+SUBSCRIBER TID 2: Read Entry 3 from topic 2
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 3 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 3: Read Entry 1 from topic 3
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 4 to queue Funny_dogs
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 4 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 5 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 2 to queue goats
+Proxy thread 1 - type Publisher - Executed command: Stop 
+Proxy thread 2 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 2: Read Entry 4 from topic 2
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Publisher - Executed command: Put
+Pushing entry 6 to queue Mountains
+Proxy thread 2 - type Publisher - Exectued command: Sleep
+Proxy thread 2 - type Publisher - Executed command: Put
+Proxy thread 2 - type Publisher - Queue full. Yielding
+Proxy thread 3 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 3: Read Entry 2 from topic 3
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 2: Read Entry 1 from topic 3
+SUBSCRIBER TID 2: Read Entry 2 from topic 3
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Stop
+Proxy thread 3 - type Publisher - Executed command: Put
+Pushing entry 3 to queue goats
+Proxy thread 3 - type Publisher - Exectued command: Sleep
+Proxy thread 3 - type Publisher - Executed command: Put
+Pushing entry 4 to queue goats
+Proxy thread 3 - type Publisher - Exectued command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 3: Read Entry 3 from topic 3
+SUBSCRIBER TID 3: Read Entry 4 from topic 3
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Publisher - Executed command: Stop 
+Clean Up Thread: Queue Mountains: Entry 1 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Funny_dogs: Entry 1 is 15.00 sec old. Dequeueing
+Dequeueing from queue Funny_dogs
+Clean Up Thread: Queue goats: Entry 1 is 15.00 sec old. Dequeueing
+Dequeueing from queue goats
+Pushing entry 7 to queue Mountains
+Proxy thread 2 - type Publisher - Exectued command: Sleep
+Clean Up Thread: Queue Funny_dogs: Entry 2 is 15.00 sec old. Dequeueing
+Dequeueing from queue Funny_dogs
+Clean Up Thread: Queue Funny_dogs: Entry 3 is 15.00 sec old. Dequeueing
+Dequeueing from queue Funny_dogs
+Clean Up Thread: Queue Mountains: Entry 2 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Proxy thread 2 - type Publisher - Executed command: Stop 
+Clean Up Thread: Queue Mountains: Entry 3 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Funny_dogs: Entry 4 is 15.00 sec old. Dequeueing
+Dequeueing from queue Funny_dogs
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Clean Up Thread: Queue Mountains: Entry 4 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Mountains: Entry 5 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue goats: Entry 2 is 15.00 sec old. Dequeueing
+Dequeueing from queue goats
+Clean Up Thread: Queue Mountains: Entry 6 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Proxy thread 3 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 3: Read Entry 7 from topic 1
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Clean Up Thread: Queue goats: Entry 3 is 15.00 sec old. Dequeueing
+Dequeueing from queue goats
+Clean Up Thread: Queue goats: Entry 4 is 15.00 sec old. Dequeueing
+Dequeueing from queue goats
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Clean Up Thread: Queue Mountains: Entry 7 is 15.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type Subscriber - Executed command: Stop
+QUEUE: Mountains
+	QUEUE is empty
+QUEUE: Funny_dogs
+	QUEUE is empty
+QUEUE: goats
+	QUEUE is empty

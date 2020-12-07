@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 				int ID = atoi(command.command_list[2]);
 				char *name = command.command_list[3];
 				int len = atoi(command.command_list[4]);
+				printf("Main Thread: Creating Topic: Name: %s - ID: %d\n",name,ID);
 				create_topic(ID, name, len);
 			}
 			else {
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
 					}
 				}
 				pub_pool[free_t].flag = 1;
-				printf("Adding Pub: %d\n",free_t + 1);
+				printf("Main Thread: Adding Pub: %d\n",free_t + 1);
 				run_pub(command.command_list[2], free_t);
 			}
 			else if (strcmp(command.command_list[1], "subscriber") == 0) {
@@ -125,7 +126,7 @@ int main(int argc, char *argv[])
 					}
 				}
 				sub_pool[free_t].flag = 1;
-				printf("Adding Sub: %d\n",free_t + 1);
+				printf("Main Thread: Adding Sub: %d\n",free_t + 1);
 				run_sub(command.command_list[2], free_t);
 			}
 			else {
@@ -134,6 +135,7 @@ int main(int argc, char *argv[])
 		}
 		else if (strcmp(command.command_list[0], "delta") == 0) {
 			int d = atoi(command.command_list[1]);
+			printf("Main Thread: Delta = %d\n",d);
 			delta(d);
 		}
 		else if (strcmp(command.command_list[0], "start") == 0) {
@@ -143,9 +145,6 @@ int main(int argc, char *argv[])
 
 	//Frees and close functions and Clean up Join
 	pthread_join(cl,NULL);
-	display_Q(&registry[0]);
-	display_Q(&registry[1]);
-	display_Q(&registry[2]);
 	fclose(fp);
 	for (int i = 0 ; i < numQueues ; i++) {
 		destroy(&registry[i]);
@@ -153,17 +152,7 @@ int main(int argc, char *argv[])
 	free_command_line(&command);
 	memset(&command, 0, 0);
 
-
-
-
-
-
-
-
-
-
-
-/* BEGIN MULTi-THREADING
+/* BEGIN MULTi-THREADING ************ OLD MAIN *****************
 	//Cond Var and Cond Mut init
 	pthread_cond_init(&cv, NULL);
 	pthread_mutex_init(&cm, NULL);
