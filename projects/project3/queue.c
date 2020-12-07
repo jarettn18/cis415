@@ -18,13 +18,6 @@
 #include "string.h"
 
 /* ================ Definitions and Global Variables ==============*/
-//#define MAXENTRY 4
-//#define DELTA 15
-//#define MAXQUEUES 4
-double DELTA = 10;
-int numQueues = 0;
-//topicQueue registry[MAXQUEUES];
-
 /* ================= init/free and helper functions ===============*/
 void init_mutex(topicQueue *queue)
 {

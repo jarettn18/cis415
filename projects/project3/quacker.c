@@ -36,6 +36,8 @@ pthread_t pub_thread[NUMPROXIES / 2];
 proxyThread sub_pool[NUMPROXIES / 2];
 pthread_t sub_thread[NUMPROXIES / 2];
 */
+double DELTA = 15;
+int numQueues = 0;
 /* ======================== Init Functions ================================*/
 void init_proxypool(proxyThread *proxy, int ID) 
 {

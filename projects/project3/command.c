@@ -17,25 +17,10 @@
 int cl_running = 0;
 /* ======================= init/free + helper functions ===================*/
 /* ====================== Pub/Sub Command Implementation =====================*/
-int put(int ID, char *URL, char *caption)
-{
-	return 1;
-}
-
-int get(int ID)
-{
-	return 1;
-}
-
 void *t_sleep(int ms)
 {
 
 	sleep((ms/1000));
-}
-
-void *stop()
-{
-	printf("Stopping program\n");
 }
 
 /* ========================= Command Line Implementation =====================*/
@@ -90,7 +75,7 @@ int delta(int d)
 
 void *start()
 {
-	sleep(1);
+	sleep(2);
 	pthread_cond_broadcast(&cv);
 	if (cl_running == 0) {
         	pthread_create(&cl, NULL, cleanup, NULL);

@@ -13,10 +13,6 @@
 #define MAXNAME 25
 #define MAXENTRY 15
 #define MAXQUEUES 6
-double DELTA;
-int numQueues;
-pthread_cond_t cv;
-pthread_mutex_t cm;
 
 typedef struct
 {

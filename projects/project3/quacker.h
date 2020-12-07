@@ -5,8 +5,8 @@
  * 	Author: Jarett Nishijo
  */
 
-#ifndef QUACKER_H_
-#define QUACKER_H_
+#ifndef QUACKER_H_INCLUDED
+#define QUACKER_H_INCLUDED
 
 /* ====================== Structs ======================*/
 typedef struct {
@@ -22,6 +22,12 @@ void display_pool(proxyThread *pool);
 
 /* ======================= Global Variables ===============*/
 #define NUMPROXIES 16
+
+double DELTA;
+int numQueues;
+//Conditional Variables
+pthread_cond_t cv;
+pthread_mutex_t cm;
 //Proxy Thread Pool Inits
 //      Publishers
 proxyThread pub_pool[NUMPROXIES / 2];

@@ -15,8 +15,5 @@ int run_sub(char *cmd_file, int ID);
 int delta(int d);
 void *start();
 //Pub/Sub Commands
-int put(int ID, char *URL, char *caption);
-int get(int ID);
 void *t_sleep(int ms);
-void *stop();
 #endif
