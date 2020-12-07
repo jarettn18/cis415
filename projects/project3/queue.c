@@ -29,7 +29,6 @@ void init_mutex(topicQueue *queue)
 }
 
 void init_topicEntry(topicEntry *entry, int pubID)
-	//TODO Add args URL and CAP add to init function
 {
 	entry->entryNum = 0;
 	entry->pubID = pubID;
@@ -94,7 +93,9 @@ void *publisher(void *args)
         size_t p_bufsize = 50;
         int size;
         FILE *pub_fp = fopen(pub_args->file, "r");
-        command_line p_cmd;
+	char URL[URLSIZE];
+	char caption[CAPSIZE];
+        command_line p_cmd, p_cmd_cap;
         if (pub_fp == NULL) {
                 printf("Proxy thread %d - type Publisher - File %s is not valid\n",pub_args->TID, pub_args->file);
 		pub_pool[pub_args->TID - 1].flag = 0;
@@ -106,26 +107,27 @@ void *publisher(void *args)
 	else{
 		while (size = getline(&p_buf, &p_bufsize, pub_fp) >= 0)
 		{
+			p_cmd_cap = str_filler(p_buf, "\"");
+			p_cmd = str_filler(p_buf, " ");
+
 			int stop = strncmp(p_buf, "stop", 4);
 			if (stop == 0) {
 				printf("Proxy thread %d - type Publisher - Executed command: Stop \n",pub_args->TID);
 				pub_pool[pub_args->TID - 1].flag = 0;
-				free(sp);
 				fclose(pub_fp);
-				memset(&p_cmd, 0, 0);
-				free_command_line(&p_cmd);
 				pthread_exit(0);
 				break;
 			}
-			p_cmd = str_filler(p_buf, " ");
 			if (strcmp(p_cmd.command_list[0], "put") == 0)
 			{	
 				fprintf(stdout,"Proxy thread %d - type Publisher - Executed command: Put\n",pub_args->TID);
+				strcpy(URL, p_cmd_cap.command_list[1]);
+				strcpy(caption, p_cmd_cap.command_list[3]);
 				topicEntry *entry = malloc(sizeof(topicEntry));
 				entry->pubID = pub_args->TID;
 				entry->entryNum = 0;
-				strcpy(entry->photoURL, p_cmd.command_list[2]);
-				strcpy(entry->photoCaption, p_cmd.command_list[3]);
+				strcpy(entry->photoURL, URL);
+				strcpy(entry->photoCaption, caption);
 				int enq_succ = enqueue(atoi(p_cmd.command_list[1]) - 1, entry);
 				if (enq_succ == 0) {
 					printf("Proxy thread %d - type Publisher - Queue full. Yielding\n",pub_args->TID);
@@ -165,6 +167,10 @@ void *subscriber(void *args)
         size_t s_bufsize = 50;
         int size;
         FILE *sub_fp = fopen(sub_args->file, "r");
+	char sub_title[15];
+	sprintf(sub_title, "sub_%d.html",sub_args->TID);
+	FILE *sub_write = fopen(sub_title, "w+");
+	
         command_line s_cmd;
         if (sub_fp == NULL) {
                 printf("Proxy thread %d - type Subscriber - File %s is not valid\n",sub_args->TID, sub_args->file);
@@ -207,10 +213,12 @@ void *subscriber(void *args)
 						}
 						else if (get_entry == 1){
 							printf("SUBSCRIBER TID %d: Read Entry %d from topic %d\n",sub_args->TID, empty->entryNum, q_index);
+//							printf("\tCaption = %s\n",empty->photoCaption);
 							get_entrylist[q_index - 1]++;
 						}
 						else {
 							printf("SUBSCRIBER TID %d: Read Entry %d from topic %d\n",sub_args->TID, empty->entryNum, q_index);
+//							printf("\tCaption = %s\n",empty->photoCaption);
 							get_entrylist[q_index - 1] = get_entry;
 						}
 					}
@@ -329,6 +337,8 @@ int getEntry(int lastEntry, topicEntry *empty, int pos)
 	{
 		empty->entryNum = registry[pos].buffer[registry[pos].tail]->entryNum;
 		empty->pubID = registry[pos].buffer[registry[pos].tail]->pubID;
+		strcpy(empty->photoCaption, registry[pos].buffer[registry[pos].tail]->photoCaption);
+		strcpy(empty->photoURL, registry[pos].buffer[registry[pos].tail]->photoURL);
 		pthread_mutex_unlock(&registry[pos].mutex);
 		return empty->entryNum;
 	}
@@ -341,6 +351,8 @@ int getEntry(int lastEntry, topicEntry *empty, int pos)
 		if (registry[pos].buffer[current_i]->entryNum == lastEntry + 1) {
 			empty->entryNum = registry[pos].buffer[current_i]->entryNum;
 			empty->pubID = registry[pos].buffer[current_i]->pubID;
+			strcpy(empty->photoCaption, registry[pos].buffer[registry[pos].tail]->photoCaption);
+			strcpy(empty->photoURL, registry[pos].buffer[registry[pos].tail]->photoURL);
 			pthread_mutex_unlock(&registry[pos].mutex);
 			return 1;
 		}

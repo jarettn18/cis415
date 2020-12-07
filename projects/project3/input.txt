@@ -2,8 +2,6 @@ create topic 1 "Mountains" 6
 create topic 2 "Funny_dogs" 6
 create topic 3 "goats" 6
 add publisher "pub1.txt"
-add publisher "pub2.txt"
-add publisher "pub3.txt"
 delta 10
 add subscriber "sub1.txt"
 add subscriber "sub2.txt"
