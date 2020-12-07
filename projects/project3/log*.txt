@@ -1,0 +1,189 @@
+==5392== Memcheck, a memory error detector
+==5392== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==5392== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==5392== Command: ./server input.txt
+==5392== 
+Main Thread: Creating Topic: Name: Mountains - ID: 1
+Main Thread: Creating Topic: Name: Funny_dogs - ID: 2
+Main Thread: Creating Topic: Name: goats - ID: 3
+Main Thread: Adding Pub: 1
+Main Thread: Delta = 10
+Main Thread: Adding Sub: 1
+Main Thread: Adding Sub: 2
+Main Thread: Adding Sub: 3
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 1 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 1: Read Entry 1 from topic 1
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Subscriber - Executed command: Get
+Proxy thread 1 - type Subscriber - Executed command: Stop
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 2 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 3 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 1 to queue Funny_dogs
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 4 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 5 to queue Mountains
+Proxy thread 1 - type Publisher - Exectued command: Sleep
+Proxy thread 1 - type Publisher - Executed command: Put
+Pushing entry 1 to queue goats
+Proxy thread 1 - type Publisher - Executed command: Stop 
+Proxy thread 2 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 2: Read Entry 1 from topic 2
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 3: Read Entry 1 from topic 3
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+SUBSCRIBER TID 2: Read Entry 1 from topic 3
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Get
+Proxy thread 2 - type: Subscriber - Executed command: Sleep
+Proxy thread 2 - type Subscriber - Executed command: Stop
+Clean Up Thread: Queue Mountains: Entry 1 is 10.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Mountains: Entry 2 is 10.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Mountains: Entry 3 is==5392== Conditional jump or move depends on uninitialised value(s)
+==5392==    at 0x483C9F5: free (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x109D21: destroy (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x109A6C: main (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392== 
+ 10.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Funny_dogs: Entry 1 is 10.00 sec old. Dequeueing
+Dequeueing from queue Funny_dogs
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Clean Up Thread: Queue Mountains: Entry 4 is 10.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue Mountains: Entry 5 is 10.00 sec old. Dequeueing
+Dequeueing from queue Mountains
+Clean Up Thread: Queue goats: Entry 1 is 10.00 sec old. Dequeueing
+Dequeueing from queue goats
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type: Subscriber - Executed command: Sleep
+Proxy thread 3 - type Subscriber - Executed command: Get
+Proxy thread 3 - type Subscriber - Executed command: Stop
+==5392== 
+==5392== HEAP SUMMARY:
+==5392==     in use at exit: 4,258 bytes in 142 blocks
+==5392==   total heap usage: 377 allocs, 235 frees, 40,204 bytes allocated
+==5392== 
+==5392== 48 bytes in 1 blocks are definitely lost in loss record 2 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x10B6AE: run_pub (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x109894: main (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392== 
+==5392== 63 (48 direct, 15 indirect) bytes in 3 blocks are definitely lost in loss record 3 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x10B993: str_filler (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x10A414: subscriber (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x4868608: start_thread (pthread_create.c:477)
+==5392==    by 0x49A4102: clone (clone.S:95)
+==5392== 
+==5392== 100 bytes in 1 blocks are definitely lost in loss record 4 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x1096B6: main (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392== 
+==5392== 144 bytes in 3 blocks are definitely lost in loss record 6 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x10B72D: run_sub (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x109943: main (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392== 
+==5392== 224 bytes in 1 blocks are definitely lost in loss record 8 of 13
+==5392==    at 0x483DFAF: realloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x490871D: getdelim (iogetdelim.c:102)
+==5392==    by 0x10A163: publisher (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x4868608: start_thread (pthread_create.c:477)
+==5392==    by 0x49A4102: clone (clone.S:95)
+==5392== 
+==5392== 439 (328 direct, 111 indirect) bytes in 14 blocks are definitely lost in loss record 9 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x10B993: str_filler (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x109E9D: publisher (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x4868608: start_thread (pthread_create.c:477)
+==5392==    by 0x49A4102: clone (clone.S:95)
+==5392== 
+==5392== 478 (296 direct, 182 indirect) bytes in 8 blocks are definitely lost in loss record 10 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x10B993: str_filler (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x1096F3: main (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392== 
+==5392== 1,346 (392 direct, 954 indirect) bytes in 14 blocks are definitely lost in loss record 12 of 13
+==5392==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==5392==    by 0x10B993: str_filler (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x109E79: publisher (in /home/jarett/Desktop/cis415/projects/project3/server)
+==5392==    by 0x4868608: start_thread (pthread_create.c:477)
+==5392==    by 0x49A4102: clone (clone.S:95)
+==5392== 
+==5392== LEAK SUMMARY:
+==5392==    definitely lost: 1,580 bytes in 45 blocks
+==5392==    indirectly lost: 1,262 bytes in 94 blocks
+==5392==      possibly lost: 0 bytes in 0 blocks
+==5392==    still reachable: 1,416 bytes in 3 blocks
+==5392==         suppressed: 0 bytes in 0 blocks
+==5392== Reachable blocks (those to which a pointer was found) are not shown.
+==5392== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==5392== 
+==5392== Use --track-origins=yes to see where uninitialised values come from
+==5392== For lists of detected and suppressed errors, rerun with: -s
+==5392== ERROR SUMMARY: 19 errors from 9 contexts (suppressed: 0 from 0)
