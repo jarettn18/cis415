@@ -11,6 +11,8 @@ Publisher and Subscriber model
 Usage:
   An input file is given to the executable to launch publisher and subscriber threads
   
+  ./server <input file>
+  
   Input file contains commands:
   
     create: Adds a circular buffer to the registry
